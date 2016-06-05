@@ -7,7 +7,7 @@ import android.view.View;
 import mainapp.mimomusic.de.missionchuckhole.activity.MapActivity;
 
 /**
- * Created by MiMo on 04.06.2016.
+ * Created by MiMo
  */
 public class ShowMapButtonListener implements View.OnClickListener {
 

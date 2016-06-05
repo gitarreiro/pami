@@ -3,7 +3,7 @@ package mainapp.mimomusic.de.missionchuckhole.listener;
 import android.view.View;
 
 /**
- * Created by MiMo on 04.06.2016.
+ * Created by MiMo
  */
 public class RecordButtonListener implements View.OnClickListener{
 

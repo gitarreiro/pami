@@ -7,7 +7,7 @@ import android.view.View;
 import mainapp.mimomusic.de.missionchuckhole.activity.SettingsActivity;
 
 /**
- * Created by MiMo on 04.06.2016.
+ * Created by MiMo
  */
 public class SettingsButtonListener implements View.OnClickListener {
 

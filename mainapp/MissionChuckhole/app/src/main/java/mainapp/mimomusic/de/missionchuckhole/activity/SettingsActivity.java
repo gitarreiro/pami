@@ -7,7 +7,7 @@ import android.preference.PreferenceFragment;
 import mainapp.mimomusic.de.missionchuckhole.R;
 
 /**
- * Created by MiMo on 04.06.2016.
+ * Created by MiMo
  */
 public class SettingsActivity extends PreferenceActivity {
 
