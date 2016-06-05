@@ -1,13 +1,16 @@
-package mainapp.mimomusic.de.missionchuckhole;
+package mainapp.mimomusic.de.missionchuckhole.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+
+import mainapp.mimomusic.de.missionchuckhole.R;
+import mainapp.mimomusic.de.missionchuckhole.listener.RecordButtonListener;
+import mainapp.mimomusic.de.missionchuckhole.listener.SettingsButtonListener;
+import mainapp.mimomusic.de.missionchuckhole.listener.ShowMapButtonListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,15 +21,21 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
+        init();
+
+
     }
+
+    private void init() {
+        Button btnRecord = (Button) findViewById(R.id.button_record);
+        btnRecord.setOnClickListener(new RecordButtonListener());
+        Button btnShowMap = (Button) findViewById(R.id.button_showmap);
+        btnShowMap.setOnClickListener(new ShowMapButtonListener(this));
+        Button btnSettings = (Button) findViewById(R.id.button_settings);
+        btnSettings.setOnClickListener(new SettingsButtonListener(this));
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

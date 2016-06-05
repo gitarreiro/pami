@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="threshold_smooth"
+        android:summary="Adjust Threshold for smooth road"
+        android:title="Threshold (smooth road)"
+        android:defaultValue="15"/>
+    <EditTextPreference
+        android:key="threshold_cobble"
+        android:summary="Adjust Threshold for cobblestones"
+        android:title="Threshold (cobblestones)"/>
+</PreferenceScreen>
