@@ -36,7 +36,6 @@ public class CalculationResult {
                 minValue = curGForce;
             }
         }
-        System.out.println("AccSum is "+accSum);
         average = accSum / ((double) fixes.size());
 
 
@@ -44,9 +43,9 @@ public class CalculationResult {
 
     @Override
     public String toString() {
-        String result = "MIN:\t" + minValue + "\n";
-        result += "MAX:\t" + maxValue + "\n";
-        result += "AVG:\t" + average;
+        String result    = "MIN:\t" + minValue + "\n";
+        result          += "MAX:\t" + maxValue + "\n";
+        result          += "AVG:\t" + average;
         return result;
     }
 }
