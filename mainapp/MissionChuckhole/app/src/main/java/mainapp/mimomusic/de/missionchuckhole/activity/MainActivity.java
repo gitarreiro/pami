@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         Button btnRecord = (Button) findViewById(R.id.button_record);
-        btnRecord.setOnClickListener(new RecordButtonListener());
+        btnRecord.setOnClickListener(new RecordButtonListener(this));
         Button btnShowMap = (Button) findViewById(R.id.button_showmap);
         btnShowMap.setOnClickListener(new ShowMapButtonListener(this));
         Button btnSettings = (Button) findViewById(R.id.button_settings);
