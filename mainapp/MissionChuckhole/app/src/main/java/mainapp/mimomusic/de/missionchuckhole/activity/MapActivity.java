@@ -25,6 +25,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     private GoogleMap mMap;
     private HeatmapTileProvider mProvider;
+    private HeatmapTileProvider mProvider1;
     private TileOverlay mOverlay;
 
     @Override
@@ -68,28 +69,102 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         list.add(new LatLng(48.569276,13.439373));
         list.add(new LatLng(48.568917,13.440532));
         list.add(new LatLng(48.568914,13.442915));
+        list.add(new LatLng(48.569639,13.443935));
+        list.add(new LatLng(48.569716,13.444685));
+        list.add(new LatLng(48.571723,13.446555));
+        list.add(new LatLng(48.571749,13.446817));
+        list.add(new LatLng(48.571784,13.447093));
+        list.add(new LatLng(48.571836,13.447316));
+        list.add(new LatLng(48.571845,13.447684));
+        list.add(new LatLng(48.571888,13.448183));
+
+
+
+
+
+        List<LatLng> list1 = new ArrayList<>();
+
+
+        list1.add(new LatLng(48.570219,13.445019));
+        list1.add(new LatLng(48.571259,13.444718));
+        list1.add(new LatLng(48.571635,13.445853));
+        list1.add(new LatLng(48.571715,13.446384));
+        list1.add(new LatLng(48.571880,13.448393));
+        list1.add(new LatLng(48.571880,13.448656));
+        list1.add(new LatLng(48.571880,13.449194));
+        list1.add(new LatLng(48.571862,13.449785));
+        list1.add(new LatLng(48.571854,13.449956));
+
+
+
+
+
 
 
 
 
         int[] colors = {
-                Color.rgb(102, 225, 0), // green
-                Color.rgb(255, 0, 0)    // red
+                //Color.rgb(102, 225, 0) // green
+                Color.rgb(0, 255, 0)  //light green
+                //Color.rgb(0, 153, 0),    // dark green
+
         };
 
         float[] startPoints = {
-                0.2f, 1f
+                //0.2f, 1f
+                1
         };
 
+        //double x = 0.2;
+
+        int[] colors1 = {
+
+                Color.rgb(255, 0, 0)    // light red
+                //Color.rgb(153, 0, 0)     // dark red
+
+        };
+
+        float[] startPoints1 = {
+                //0.2f, 1f
+                1
+        };
         Gradient gradient = new Gradient(colors, startPoints);
+        Gradient gradient1 = new Gradient(colors1, startPoints1);
 
         // Create a heat map tile provider, passing it the latlngs of the police stations.
+
         mProvider = new HeatmapTileProvider.Builder()
                 .data(list)
+                .radius(10)
                 .gradient(gradient)
                 .build();
+
+
+
+        mProvider1 = new HeatmapTileProvider.Builder()
+                .data(list1)
+                .radius(10)
+                .gradient(gradient1)
+                .build();
+
+        //
+     /*
+        List<String> temp = Arrays.asList(coordinates.get(i).split(";"));
+        LatLng coor = new LatLng(Double.parseDouble(temp.get(1)), Double.parseDouble(temp.get(2)));
+
+        WeightedLatLng data = new WeightedLatLng(coor, Double.parseDouble(temp.get(0)) );
+        ArrayList<WeightedLatLng> W = new ArrayList<>();
+        W.add(list);
+
+        mProvider = new HeatmapTileProvider.Builder().weightedData(W).build();
+
+        mProvider = new HeatmapTileProvider.Builder().weightedData().build();
+
+        */
+
         // Add a tile overlay to the map, using the heat map tile provider.
         mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
 
     }
 
