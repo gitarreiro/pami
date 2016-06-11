@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 
 
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     private GoogleMap mMap;
     private HeatmapTileProvider mProvider;
-    private HeatmapTileProvider mProvider1;
     private TileOverlay mOverlay;
 
     @Override
@@ -62,44 +62,29 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Passau,16));
 
-        List<LatLng> list = new ArrayList<>();
+        List<WeightedLatLng> list = new ArrayList<>();
 
-        list.add(new LatLng(48.569635,13.437468));
-        list.add(new LatLng(48.570099,13.439429));
-        list.add(new LatLng(48.569276,13.439373));
-        list.add(new LatLng(48.568917,13.440532));
-        list.add(new LatLng(48.568914,13.442915));
-        list.add(new LatLng(48.569639,13.443935));
-        list.add(new LatLng(48.569716,13.444685));
-        list.add(new LatLng(48.571723,13.446555));
-        list.add(new LatLng(48.571749,13.446817));
-        list.add(new LatLng(48.571784,13.447093));
-        list.add(new LatLng(48.571836,13.447316));
-        list.add(new LatLng(48.571845,13.447684));
-        list.add(new LatLng(48.571888,13.448183));
-
-
-
-
-
-        List<LatLng> list1 = new ArrayList<>();
-
-
-        list1.add(new LatLng(48.570219,13.445019));
-        list1.add(new LatLng(48.571259,13.444718));
-        list1.add(new LatLng(48.571635,13.445853));
-        list1.add(new LatLng(48.571715,13.446384));
-        list1.add(new LatLng(48.571880,13.448393));
-        list1.add(new LatLng(48.571880,13.448656));
-        list1.add(new LatLng(48.571880,13.449194));
-        list1.add(new LatLng(48.571862,13.449785));
-        list1.add(new LatLng(48.571854,13.449956));
-
-
-
-
-
-
+        list.add(new WeightedLatLng(new LatLng(48.569635,13.437468),1));
+        list.add(new WeightedLatLng(new LatLng(48.570099,13.439429),1));
+        list.add(new WeightedLatLng(new LatLng(48.569276,13.439373),1));
+        list.add(new WeightedLatLng(new LatLng(48.568917,13.440532),0.1));
+        list.add(new WeightedLatLng(new LatLng(48.568914,13.442915),0.1));
+        list.add(new WeightedLatLng(new LatLng(48.569639,13.443935),0.1));
+        list.add(new WeightedLatLng(new LatLng(48.569716,13.444685),0.7));
+        list.add(new WeightedLatLng(new LatLng(48.571723,13.446555),0.7));
+        list.add(new WeightedLatLng(new LatLng(48.571784,13.447093),0.7));
+        list.add(new WeightedLatLng(new LatLng(48.571836,13.447316),1));
+        list.add(new WeightedLatLng(new LatLng(48.571845,13.447684),1));
+        list.add(new WeightedLatLng(new LatLng(48.571888,13.448183),0.3));
+        list.add(new WeightedLatLng(new LatLng(48.570219,13.445019),0.3));
+        list.add(new WeightedLatLng(new LatLng(48.571259,13.444718),0.3));
+        list.add(new WeightedLatLng(new LatLng(48.571635,13.445853),1));
+        list.add(new WeightedLatLng(new LatLng(48.571715,13.446384),0.5));
+        list.add(new WeightedLatLng(new LatLng(48.571880,13.448393),0.5));
+        list.add(new WeightedLatLng(new LatLng(48.571880,13.448656),0.5));
+        list.add(new WeightedLatLng(new LatLng(48.571880,13.449194),1));
+        list.add(new WeightedLatLng(new LatLng(48.571862,13.449785),1));
+        list.add(new WeightedLatLng(new LatLng(48.571854,13.449956),1));
 
 
 
@@ -115,37 +100,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 1
         };
 
-        //double x = 0.2;
 
-        int[] colors1 = {
-
-                Color.rgb(255, 0, 0)    // light red
-                //Color.rgb(153, 0, 0)     // dark red
-
-        };
-
-        float[] startPoints1 = {
-                //0.2f, 1f
-                1
-        };
         Gradient gradient = new Gradient(colors, startPoints);
-        Gradient gradient1 = new Gradient(colors1, startPoints1);
+
 
         // Create a heat map tile provider, passing it the latlngs of the police stations.
 
         mProvider = new HeatmapTileProvider.Builder()
-                .data(list)
-                .radius(10)
-                .gradient(gradient)
+                .weightedData(list)
                 .build();
 
 
 
-        mProvider1 = new HeatmapTileProvider.Builder()
-                .data(list1)
-                .radius(10)
-                .gradient(gradient1)
-                .build();
+
 
         //
      /*
@@ -164,7 +131,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         // Add a tile overlay to the map, using the heat map tile provider.
         mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
-        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
+
 
     }
 
