@@ -2,6 +2,7 @@ package mainapp.mimomusic.de.missionchuckhole.activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -28,14 +29,29 @@ import mainapp.mimomusic.de.missionchuckhole.listener.ShowMapButtonListener;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private static final int updateInterval = 500; //0,5 Sekunden
     private GoogleMap mMap;
     private HeatmapTileProvider mProvider;
     private HeatmapTileProvider mProvider1;
     private TileOverlay mOverlay;
+    // variables needed to update the map overlay
+    private Handler handler;
+    Runnable updateRunnable = new Runnable() {
+        @Override
+        public void run() {
+            //TODO update map here
+            System.out.println("doing map update");
+            if (handler != null) {
+                handler.postDelayed(updateRunnable, updateInterval);
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("onCreate() called");
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -48,6 +64,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         init();
         // test
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        System.out.println("onPause() called");
+        if (handler != null) {
+            stopUpdatingMap();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("onResume() called");
+        if (updateRunnable != null) {
+            updateRunnable.run();
+        }
     }
 
     private void init() {
@@ -93,48 +127,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng Passau = new LatLng(48.569303, 13.440118);
 
 
-
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Passau, 13));
 
         List<LatLng> list = new ArrayList<>();
 
-        list.add(new LatLng(48.569635,13.437468));
-        list.add(new LatLng(48.570099,13.439429));
-        list.add(new LatLng(48.569276,13.439373));
-        list.add(new LatLng(48.568917,13.440532));
-        list.add(new LatLng(48.568914,13.442915));
-        list.add(new LatLng(48.569639,13.443935));
-        list.add(new LatLng(48.569716,13.444685));
-        list.add(new LatLng(48.571723,13.446555));
-        list.add(new LatLng(48.571749,13.446817));
-        list.add(new LatLng(48.571784,13.447093));
-        list.add(new LatLng(48.571836,13.447316));
-        list.add(new LatLng(48.571845,13.447684));
-        list.add(new LatLng(48.571888,13.448183));
-
-
-
+        list.add(new LatLng(48.569635, 13.437468));
+        list.add(new LatLng(48.570099, 13.439429));
+        list.add(new LatLng(48.569276, 13.439373));
+        list.add(new LatLng(48.568917, 13.440532));
+        list.add(new LatLng(48.568914, 13.442915));
+        list.add(new LatLng(48.569639, 13.443935));
+        list.add(new LatLng(48.569716, 13.444685));
+        list.add(new LatLng(48.571723, 13.446555));
+        list.add(new LatLng(48.571749, 13.446817));
+        list.add(new LatLng(48.571784, 13.447093));
+        list.add(new LatLng(48.571836, 13.447316));
+        list.add(new LatLng(48.571845, 13.447684));
+        list.add(new LatLng(48.571888, 13.448183));
 
 
         List<LatLng> list1 = new ArrayList<>();
 
 
-        list1.add(new LatLng(48.570219,13.445019));
-        list1.add(new LatLng(48.571259,13.444718));
-        list1.add(new LatLng(48.571635,13.445853));
-        list1.add(new LatLng(48.571715,13.446384));
-        list1.add(new LatLng(48.571880,13.448393));
-        list1.add(new LatLng(48.571880,13.448656));
-        list1.add(new LatLng(48.571880,13.449194));
-        list1.add(new LatLng(48.571862,13.449785));
-        list1.add(new LatLng(48.571854,13.449956));
-
-
-
-
-
-
-
+        list1.add(new LatLng(48.570219, 13.445019));
+        list1.add(new LatLng(48.571259, 13.444718));
+        list1.add(new LatLng(48.571635, 13.445853));
+        list1.add(new LatLng(48.571715, 13.446384));
+        list1.add(new LatLng(48.571880, 13.448393));
+        list1.add(new LatLng(48.571880, 13.448656));
+        list1.add(new LatLng(48.571880, 13.449194));
+        list1.add(new LatLng(48.571862, 13.449785));
+        list1.add(new LatLng(48.571854, 13.449956));
 
 
         int[] colors = {
@@ -174,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .build();
 
 
-
         mProvider1 = new HeatmapTileProvider.Builder()
                 .data(list1)
                 .radius(10)
@@ -200,6 +222,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
         mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
 
+        handler = new Handler();
+        startUpdatingMap();
+
+    }
+
+    private void startUpdatingMap() {
+        updateRunnable.run();
+    }
+
+    private void stopUpdatingMap() {
+        handler.removeCallbacks(updateRunnable);
     }
 
 }
