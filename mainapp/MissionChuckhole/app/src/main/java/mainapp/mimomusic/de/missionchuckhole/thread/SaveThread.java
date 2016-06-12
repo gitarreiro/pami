@@ -1,14 +1,12 @@
 package mainapp.mimomusic.de.missionchuckhole.thread;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import mainapp.mimomusic.de.missionchuckhole.data.AccFix;
+import mainapp.mimomusic.de.missionchuckhole.data.DataStore;
 
 /**
  * Created by MiMo
@@ -24,18 +22,22 @@ public class SaveThread extends Thread {
     }
 
     public void setSaveData(List<AccFix> newFixes) {
-        fixesToSave.addAll(newFixes);
+        fixesToSave = newFixes;
     }
 
     @Override
     public void run() {
-        SharedPreferences prefs = context.getSharedPreferences("CHUCK_PREFS", Context.MODE_PRIVATE);
+
+        DataStore dataStore = DataStore.getInstance();
+        dataStore.storeFixes(this.fixesToSave);
+
+ /*       SharedPreferences prefs = context.getSharedPreferences("CHUCK_PREFS", Context.MODE_PRIVATE);
 
         Gson gson = new Gson();
 
         String json = prefs.getString("acclist", "");
-
-        List<AccFix> fixes = gson.fromJson(json, List.class);
+        System.out.println("Ausgangs-JSON: "+json);
+        List<String> fixes = gson.fromJson(json, List.class);
         if (fixes == null) {
             fixes = new ArrayList<>();
             System.out.println("storedFixes was null out of Shared Preferences");
@@ -51,6 +53,6 @@ public class SaveThread extends Thread {
         prefsEditor.putString("acclist", json);
         prefsEditor.apply();
 
-
+*/
     }
 }

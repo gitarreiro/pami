@@ -1,10 +1,10 @@
 package mainapp.mimomusic.de.missionchuckhole.listener;
 
-import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 
+import mainapp.mimomusic.de.missionchuckhole.activity.MainActivity;
 import mainapp.mimomusic.de.missionchuckhole.service.RecordService;
 
 /**
@@ -12,12 +12,12 @@ import mainapp.mimomusic.de.missionchuckhole.service.RecordService;
  */
 public class RecordButtonListener implements View.OnClickListener{
 
-    private Context context;
+    private MainActivity activity;
     private Button btn;
     private boolean isRecording;
 
-    public RecordButtonListener(Context context, Button btn) {
-        this.context = context;
+    public RecordButtonListener(MainActivity activity, Button btn) {
+        this.activity = activity;
         this.btn = btn;
         this.isRecording = false;
     }
@@ -28,12 +28,14 @@ public class RecordButtonListener implements View.OnClickListener{
         this.isRecording = !this.isRecording;
         if(isRecording) {
             btn.setText("STOP RECORDING");
-            Intent intent = new Intent(this.context, RecordService.class);
-            context.startService(intent);
+            Intent intent = new Intent(this.activity, RecordService.class);
+            activity.startService(intent);
+            activity.startUpdatingMap();
         } else {
             btn.setText("START RECORDING");
-            Intent intent = new Intent(this.context, RecordService.class);
-            context.stopService(intent);
+            Intent intent = new Intent(this.activity, RecordService.class);
+            activity.stopService(intent);
+            activity.stopUpdatingMap();
         }
 
     }

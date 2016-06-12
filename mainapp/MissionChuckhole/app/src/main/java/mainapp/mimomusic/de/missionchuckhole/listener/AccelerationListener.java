@@ -1,5 +1,7 @@
 package mainapp.mimomusic.de.missionchuckhole.listener;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -9,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -57,6 +60,7 @@ public class AccelerationListener implements SensorEventListener {
             } else {
                 ChuckLocationListener locationListener = new ChuckLocationListener();
 
+
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
 
@@ -81,9 +85,10 @@ public class AccelerationListener implements SensorEventListener {
             e.printStackTrace();
         }
 
-
-        AccFix fix = new AccFix(x, y, z, gForce, location);
-        tmpFixes.add(fix);
+        if(location != null) {
+            AccFix fix = new AccFix(x, y, z, gForce, location);
+            tmpFixes.add(fix);
+        }
 
         if(tmpFixes.size()>50) {
             List<AccFix> fixesToSave = new ArrayList<>();
@@ -103,6 +108,7 @@ public class AccelerationListener implements SensorEventListener {
             SaveThread saver = new SaveThread(context);
             saver.setSaveData(fixesToSave);
             saver.start();
+            System.out.println("SaverThread started");
             tmpFixes.clear();
 
         }

@@ -2,10 +2,13 @@ package mainapp.mimomusic.de.missionchuckhole.data;
 
 import android.location.Location;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 /**
  * Created by MiMo on 27.05.2016.
  */
-public class AccFix implements  Cloneable{
+public class AccFix implements Cloneable {
 
     private double x;
     private double y;
@@ -31,6 +34,25 @@ public class AccFix implements  Cloneable{
             result += ";" + location.getLatitude() + ";" + location.getLongitude();
         }
         return result;
+    }
+
+    public double getgForce() {
+        return gForce;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public String toSaveString() {
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        return json;
+    }
+
+    public static AccFix fromSaveString(String json) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, AccFix.class);
     }
 
     public Object clone() throws CloneNotSupportedException {
