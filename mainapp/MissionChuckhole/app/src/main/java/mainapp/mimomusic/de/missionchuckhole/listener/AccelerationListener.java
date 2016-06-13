@@ -58,23 +58,24 @@ public class AccelerationListener implements SensorEventListener {
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // no network provider is enabled
             } else {
-                ChuckLocationListener locationListener = new ChuckLocationListener();
+                //ChuckLocationListener locationListener = new ChuckLocationListener();
 
 
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
 
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                    //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
                     Log.d("Network", "Network");
                     location = locationManager
                             .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 }
                 // if GPS Enabled get lat/long using GPS Services
                 if (isGPSEnabled) {
-                    locationManager.requestLocationUpdates(
+                    /*locationManager.requestLocationUpdates(
                             LocationManager.GPS_PROVIDER,
                             MIN_TIME_BW_UPDATES,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                    */
                     Log.d("GPS Enabled", "GPS Enabled");
                     location = locationManager
                             .getLastKnownLocation(LocationManager.GPS_PROVIDER);

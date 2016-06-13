@@ -2,9 +2,6 @@ package mainapp.mimomusic.de.missionchuckhole.data;
 
 import android.location.Location;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-
 /**
  * Created by MiMo on 27.05.2016.
  */
@@ -24,13 +21,15 @@ public class AccFix implements Cloneable {
         this.location = location;
     }
 
+
+
     @Override
     public String toString() {
         String result = String.valueOf(x) + ";"
                 + String.valueOf(y) + ";"
                 + String.valueOf(z) + ";"
                 + String.valueOf(gForce);
-        if(location != null) {
+        if (location != null) {
             result += ";" + location.getLatitude() + ";" + location.getLongitude();
         }
         return result;
@@ -45,26 +44,44 @@ public class AccFix implements Cloneable {
     }
 
     public String toSaveString() {
-        Gson gson = new Gson();
-        String json = gson.toJson(this);
-        return json;
+        String result = this.toString();
+        if (location != null) {
+            result += ";" + location.getProvider();
+        }
+        return result;
     }
 
-    public static AccFix fromSaveString(String json) {
-        Gson gson = new Gson();
-        return gson.fromJson(json, AccFix.class);
+    public static AccFix fromSaveString(String saveString) {
+
+        String[] splitted = saveString.split(";");
+        double x = Double.parseDouble(splitted[0]);
+        double y = Double.parseDouble(splitted[1]);
+        double z = Double.parseDouble(splitted[2]);
+        double gForce = Double.parseDouble(splitted[3]);
+        Location location = null;
+        if(splitted.length==6) {
+            double latitude = Double.parseDouble(splitted[4]);
+            double longitude = Double.parseDouble(splitted[5]);
+            String provider = splitted[6];
+            location = new Location(provider);
+            location.setLatitude(latitude);
+            location.setLongitude(longitude);
+
+        }
+
+        return new AccFix(x,y,z,gForce,location);
     }
 
     public Object clone() throws CloneNotSupportedException {
         super.clone();
         Location location = null;
-        if(this.location != null) {
+        if (this.location != null) {
             location = new Location(this.location.getProvider());
             location.setSpeed(this.location.getSpeed());
             location.setLatitude(this.location.getLatitude());
             location.setLongitude(this.location.getLongitude());
         }
-        return new AccFix(this.x,this.y,this.z,this.gForce,location);
+        return new AccFix(this.x, this.y, this.z, this.gForce, location);
     }
 
 }

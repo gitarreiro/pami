@@ -22,12 +22,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
-import com.google.maps.android.heatmaps.WeightedLatLng;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import mainapp.mimomusic.de.missionchuckhole.R;
@@ -48,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean isRecording;
     private boolean isUpdateMapPossible;
     private Handler updateHandler;
-    private Handler tryUpdateHandler = new Handler();
     Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
@@ -59,11 +54,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
-
+    private Handler tryUpdateHandler = new Handler();
     private Runnable tryUpdateRunnable = new Runnable() {
         @Override
         public void run() {
-            if(isUpdateMapPossible) {
+            if (isUpdateMapPossible) {
                 updateRunnable.run();
             } else {
                 tryUpdateHandler.postDelayed(tryUpdateRunnable, retryInterval);
@@ -72,12 +67,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     };
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DataStore.getInstance();
+        DataStore.getInstance(this);
 
         System.out.println("onCreate() called");
         setContentView(R.layout.activity_main);
@@ -98,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onPause() {
         super.onPause();
         System.out.println("onPause() called");
-        DataStore.getInstance().persistFixes();
+        DataStore.getInstance(this).persistFixes(this);
         if (updateHandler != null) {
             stopUpdatingMap();
         }
@@ -117,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onDestroy() {
         super.onDestroy();
         System.out.println("onDestroy() called");
+        //TODO check if double persisting can make problems
+        DataStore.getInstance(this).persistFixes(this);
     }
 
     private void init() {
@@ -164,8 +160,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Criteria criteria = new Criteria();
 
         Location location = null;
-        try{
-            System.out.println("best provider: " + manager.getBestProvider(criteria, false));
+        try {
             location = manager.getLastKnownLocation(manager.getBestProvider(criteria, false));
         } catch (SecurityException e) {
             e.printStackTrace();
@@ -173,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             e.printStackTrace();
         }
 
-        if(location == null) {
+        if (location == null) {
 
             //create dummy location: Uni Passau3
             location = new Location("dummy");
@@ -181,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             location.setLongitude(13.451358);
         }
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.getLatitude(), location.getLongitude()), 13));
+                new LatLng(location.getLatitude(), location.getLongitude()), 13));
 
         SharedPreferences prefs = getSharedPreferences("CHUCK_PREFS", Context.MODE_PRIVATE);
 
@@ -189,58 +184,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         String json = prefs.getString("acclist", "");
 
-        List<AccFix> fixes = DataStore.getInstance().getFixes();
-        System.out.println("Fixes loaded from DataStore: "+fixes.size());
+        List<AccFix> fixes = DataStore.getInstance(this).getFixes();
+        System.out.println("Fixes loaded from DataStore: " + fixes.size());
 
-        //Type type = new TypeToken<List<AccFix>>(){}.getType();
-        //final List<String> items= gson.fromJson(json, List.class);
-/*
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int i = 0;
-                for (String item: items) {
-                    if(i>10) {
-                        break;
-                    }
-                    AccFix fix = AccFix.fromSaveString(item);
-                    //System.out.println(fix);
-                }
-            }
-        });
-        thread.start();
-
-*/
-/*
-        for (int i = 0; i<fixes.size();i++) {
-            Object fix = fixes.get(i);
-            System.out.println(fix);
-        }
-*/
-
-
-        //List<AccFix> fixes = gson.fromJson(json, List.class);
-        /*if (fixes == null) {
-            fixes = new ArrayList<>();
-        }*/
-
-
-        //List<WeightedLatLng> overlayPoints = new ArrayList<>();
-/*
         for (AccFix fix : fixes) {
             System.out.println(fix);
-            if(fix.getLocation() == null) {
-                continue;
-            }
-            double latitude = fix.getLocation().getLatitude();
-            double longitude = fix.getLocation().getLongitude();
-            WeightedLatLng point = new WeightedLatLng(new LatLng(latitude, longitude), fix.getgForce() / 6.0);
-            System.out.println("weight: " + fix.getgForce() / 6.0);
         }
-*/
 
 
-        setUpdateMapPossible();
+            setUpdateMapPossible();
 
 
     }

@@ -27,32 +27,6 @@ public class SaveThread extends Thread {
 
     @Override
     public void run() {
-
-        DataStore dataStore = DataStore.getInstance();
-        dataStore.storeFixes(this.fixesToSave);
-
- /*       SharedPreferences prefs = context.getSharedPreferences("CHUCK_PREFS", Context.MODE_PRIVATE);
-
-        Gson gson = new Gson();
-
-        String json = prefs.getString("acclist", "");
-        System.out.println("Ausgangs-JSON: "+json);
-        List<String> fixes = gson.fromJson(json, List.class);
-        if (fixes == null) {
-            fixes = new ArrayList<>();
-            System.out.println("storedFixes was null out of Shared Preferences");
-        }
-        System.out.println("stored fixes: " + fixes.size());
-
-        fixes.addAll(fixesToSave);
-
-        System.out.println("new stored fixes: " + fixes.size());
-
-        SharedPreferences.Editor prefsEditor = prefs.edit();
-        json = gson.toJson(fixes);
-        prefsEditor.putString("acclist", json);
-        prefsEditor.apply();
-
-*/
+        DataStore.getInstance(context).storeFixes(this.fixesToSave);
     }
 }
