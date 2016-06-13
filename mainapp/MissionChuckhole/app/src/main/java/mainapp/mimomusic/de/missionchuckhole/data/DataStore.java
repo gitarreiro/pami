@@ -5,6 +5,7 @@ import android.os.Environment;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -39,13 +40,14 @@ public class DataStore {
     }
 
     public void persistFixes(Context context) {
-        //File root = Environment.getExternalStorageDirectory();
-        File root = context.getFilesDir();
+        System.out.println("STATE IS "+Environment.getExternalStorageState());
+
+        File root = Environment.getExternalStorageDirectory();
+        //File root = context.getFilesDir();
         File dir = new File(root.getAbsolutePath() + "/missionchuckhole");
-        dir.mkdir();
+        dir.mkdirs();
         String filename = "fixes.mch";
         File file = new File(dir, filename);
-        System.out.println("DATEI: " + file.getAbsolutePath());
 
         try {
             FileOutputStream f = new FileOutputStream(file);
@@ -59,39 +61,32 @@ public class DataStore {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        //TODO implement
     }
 
     private void loadFixes(Context context) {
         fixes = new ArrayList<>();
-
-        File root = context.getFilesDir();
+        File root = Environment.getExternalStorageDirectory();
+        //File root = context.getFilesDir();
         File dir = new File(root.getAbsolutePath() + "/missionchuckhole");
         String filename = "fixes.mch";
         File file = new File(dir, filename);
         if (!file.exists()) {
-            System.out.println("file does not exist");
             return;
         }
-        System.out.println("file exists");
+
+
+        System.out.println("reading file "+file.getAbsolutePath());
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
-            System.out.println("reading file");
-            int i = 0;
             while ((line = br.readLine()) != null) {
-                i++;
                 AccFix fix = AccFix.fromSaveString(line);
-                System.out.println("new fix: "+fix);
+                fixes.add(fix);
             }
-            System.out.println("data found: "+i);
             br.close();
         }catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }

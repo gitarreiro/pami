@@ -3,7 +3,7 @@ package mainapp.mimomusic.de.missionchuckhole.data;
 import android.location.Location;
 
 /**
- * Created by MiMo on 27.05.2016.
+ * Created by MiMo
  */
 public class AccFix implements Cloneable {
 
@@ -48,11 +48,16 @@ public class AccFix implements Cloneable {
         if (location != null) {
             result += ";" + location.getProvider();
         }
+
+        System.out.println("extracted savestring: ");
+        System.out.println(result);
+
         return result;
     }
 
     public static AccFix fromSaveString(String saveString) {
-
+        System.out.println("creating AccFix from: ");
+        System.out.println(saveString);
         String[] splitted = saveString.split(";");
         double x = Double.parseDouble(splitted[0]);
         double y = Double.parseDouble(splitted[1]);
@@ -68,7 +73,7 @@ public class AccFix implements Cloneable {
             location.setLongitude(longitude);
 
         }
-
+        System.out.println("created AccFix: "+location);
         return new AccFix(x,y,z,gForce,location);
     }
 

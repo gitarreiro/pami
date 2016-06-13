@@ -21,9 +21,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.gson.Gson;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mainapp.mimomusic.de.missionchuckhole.R;
@@ -38,9 +41,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int updateInterval = 500; //0,5 Sekunden
     private static final int retryInterval = 1000;
     private GoogleMap map;
-    private HeatmapTileProvider mProvider;
-    private HeatmapTileProvider mProvider1;
-    private TileOverlay mOverlay;
+    private HeatmapTileProvider tileProvider;
+    private TileOverlay tileOverlay;
     private boolean isRecording;
     private boolean isUpdateMapPossible;
     private Handler updateHandler;
@@ -66,12 +68,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
+    //TODO AccFix rausschmeißen ohne Location
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        DataStore.getInstance(this);
 
         System.out.println("onCreate() called");
         setContentView(R.layout.activity_main);
@@ -152,7 +153,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
-        String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+        String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
         ActivityCompat.requestPermissions(this, permissions, 0);
 
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -178,21 +181,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(location.getLatitude(), location.getLongitude()), 13));
 
-        SharedPreferences prefs = getSharedPreferences("CHUCK_PREFS", Context.MODE_PRIVATE);
-
-        Gson gson = new Gson();
-
-        String json = prefs.getString("acclist", "");
-
         List<AccFix> fixes = DataStore.getInstance(this).getFixes();
-        System.out.println("Fixes loaded from DataStore: " + fixes.size());
+
+        List<WeightedLatLng> points = new ArrayList<>();
 
         for (AccFix fix : fixes) {
-            System.out.println(fix);
+            //create WeightedLatLng and add it to list TODO
+            Location fixLocation = fix.getLocation();
+            if(fixLocation != null) {
+                double latitude = fixLocation.getLatitude();
+                double longitude = fixLocation.getLongitude();
+                double intensity = fix.getgForce() / 6.0;
+                System.out.println("intensity is "+intensity);
+                WeightedLatLng wll = new WeightedLatLng(new LatLng(latitude, longitude), intensity);
+                points.add(wll);
+            } else {
+                System.out.println("location is null: "+fix);
+            }
+        }
+
+        System.out.println("points: "+points.size());
+        if(points.size()>0) {
+            tileProvider = new HeatmapTileProvider.Builder().weightedData(points).build();
+
+            tileOverlay = map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            //tileOverlay.setVisible(false);
+
         }
 
 
-            setUpdateMapPossible();
+        setUpdateMapPossible();
 
 
     }
