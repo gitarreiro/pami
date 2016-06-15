@@ -2,7 +2,6 @@ package mainapp.mimomusic.de.missionchuckhole.activity;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -22,7 +21,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.gson.Gson;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
 
@@ -32,6 +30,7 @@ import java.util.List;
 import mainapp.mimomusic.de.missionchuckhole.R;
 import mainapp.mimomusic.de.missionchuckhole.data.AccFix;
 import mainapp.mimomusic.de.missionchuckhole.data.DataStore;
+import mainapp.mimomusic.de.missionchuckhole.listener.ChuckLocationListener;
 import mainapp.mimomusic.de.missionchuckhole.listener.RecordButtonListener;
 import mainapp.mimomusic.de.missionchuckhole.listener.SettingsButtonListener;
 import mainapp.mimomusic.de.missionchuckhole.listener.ShowMapButtonListener;
@@ -93,10 +92,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onPause() {
         super.onPause();
         System.out.println("onPause() called");
-        DataStore.getInstance(this).persistFixes(this);
         if (updateHandler != null) {
             stopUpdatingMap();
         }
+        //DataStore.getInstance(this).closeDB();
     }
 
     @Override
@@ -113,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onDestroy();
         System.out.println("onDestroy() called");
         //TODO check if double persisting can make problems
-        DataStore.getInstance(this).persistFixes(this);
     }
 
     private void init() {
@@ -161,9 +159,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         Criteria criteria = new Criteria();
+        ChuckLocationListener listener = new ChuckLocationListener(map);
+        try {
+            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+
 
         Location location = null;
         try {
+            System.out.println("best provider: " + manager.getBestProvider(criteria, false));
             location = manager.getLastKnownLocation(manager.getBestProvider(criteria, false));
         } catch (SecurityException e) {
             e.printStackTrace();
@@ -173,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (location == null) {
 
-            //create dummy location: Uni Passau3
+            //create dummy location: Uni Passau
             location = new Location("dummy");
             location.setLatitude(48.566827);
             location.setLongitude(13.451358);
@@ -183,25 +189,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         List<AccFix> fixes = DataStore.getInstance(this).getFixes();
 
+        System.out.println("eingelesene fixes: "+fixes.size());
+
         List<WeightedLatLng> points = new ArrayList<>();
 
         for (AccFix fix : fixes) {
             //create WeightedLatLng and add it to list TODO
             Location fixLocation = fix.getLocation();
-            if(fixLocation != null) {
+            if (fixLocation != null) {
                 double latitude = fixLocation.getLatitude();
                 double longitude = fixLocation.getLongitude();
                 double intensity = fix.getgForce() / 6.0;
-                System.out.println("intensity is "+intensity);
+                System.out.println("intensity is " + intensity);
                 WeightedLatLng wll = new WeightedLatLng(new LatLng(latitude, longitude), intensity);
                 points.add(wll);
             } else {
-                System.out.println("location is null: "+fix);
+                System.out.println("location is null: " + fix);
             }
         }
 
-        System.out.println("points: "+points.size());
-        if(points.size()>0) {
+        System.out.println("points: " + points.size());
+        if (points.size() > 0) {
             tileProvider = new HeatmapTileProvider.Builder().weightedData(points).build();
 
             tileOverlay = map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));

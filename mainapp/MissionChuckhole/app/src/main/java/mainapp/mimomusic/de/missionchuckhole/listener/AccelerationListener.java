@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mainapp.mimomusic.de.missionchuckhole.data.AccFix;
+import mainapp.mimomusic.de.missionchuckhole.data.DataStore;
 import mainapp.mimomusic.de.missionchuckhole.thread.SaveThread;
 
 /**
@@ -99,18 +100,11 @@ public class AccelerationListener implements SensorEventListener {
 
 
         AccFix fix = new AccFix(x, y, z, gForce, location);
-        tmpFixes.add(fix);
-        System.out.println("added Fix: "+fix);
+        //tmpFixes.add(fix);
+        System.out.println("added Fix: " + fix);
 
-        //if (tmpFixes.size() > 50) {
-            List<AccFix> fixesToSave = new ArrayList<>();
-            fixesToSave.addAll(tmpFixes);
-
-            SaveThread saver = new SaveThread(context);
-            saver.setSaveData(fixesToSave);
-            saver.start();
-            System.out.println("SaverThread started");
-            tmpFixes.clear();
+        DataStore.getInstance(context).storeFix(fix);
+        tmpFixes.clear();
 
         //}
 
@@ -122,28 +116,4 @@ public class AccelerationListener implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-
-    private class ChuckLocationListener implements LocationListener {
-
-        @Override
-        public void onLocationChanged(Location location) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-    }
-
 }

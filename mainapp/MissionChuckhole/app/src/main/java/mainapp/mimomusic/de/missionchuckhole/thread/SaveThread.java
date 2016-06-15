@@ -2,9 +2,6 @@ package mainapp.mimomusic.de.missionchuckhole.thread;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mainapp.mimomusic.de.missionchuckhole.data.AccFix;
 import mainapp.mimomusic.de.missionchuckhole.data.DataStore;
 
@@ -14,19 +11,18 @@ import mainapp.mimomusic.de.missionchuckhole.data.DataStore;
 public class SaveThread extends Thread {
 
     Context context;
-    private List<AccFix> fixesToSave;
+    private AccFix fix;
 
     public SaveThread(Context context) {
-        fixesToSave = new ArrayList<>();
         this.context = context;
     }
 
-    public void setSaveData(List<AccFix> newFixes) {
-        fixesToSave = newFixes;
+    public void setSaveData(AccFix fix) {
+        this.fix = fix;
     }
 
     @Override
     public void run() {
-        DataStore.getInstance(context).storeFixes(this.fixesToSave);
+        DataStore.getInstance(context).storeFix(this.fix);
     }
 }
