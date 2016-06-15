@@ -17,13 +17,23 @@ public class ChuckLocationListener implements LocationListener {
 
     private GoogleMap map;
 
-    public ChuckLocationListener(GoogleMap map) {
+    public ChuckLocationListener() {
+    }
+
+    public void setMap(GoogleMap map) {
         this.map = map;
+    }
+
+    public GoogleMap getMap() {
+        return map;
     }
 
     @Override
     public void onLocationChanged(Location location) {
         //map.clear();
+
+
+        System.out.println("Location update!");
 
         MarkerOptions mp = new MarkerOptions();
 
@@ -41,10 +51,9 @@ public class ChuckLocationListener implements LocationListener {
             location.setLongitude(13.451358);
         }
 
-        float zoom = map.getCameraPosition().zoom;
-        System.out.println("zoom: "+zoom);
+        float zoomLevel = map.getCameraPosition().zoom;
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(location.getLatitude(), location.getLongitude()), 16));
+                new LatLng(location.getLatitude(), location.getLongitude()), zoomLevel));
 
     }
 

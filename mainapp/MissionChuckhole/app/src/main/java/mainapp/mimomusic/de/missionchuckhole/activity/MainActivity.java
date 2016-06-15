@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int retryInterval = 1000;
     private GoogleMap map;
     private HeatmapTileProvider tileProvider;
-    private TileOverlay tileOverlay;
     private boolean isRecording;
     private LocationManager manager;
+    private ChuckLocationListener listener;
     private boolean isUpdateMapPossible;
     private Handler updateHandler;
     Runnable updateRunnable = new Runnable() {
@@ -114,8 +114,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void init() {
+        this.manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        this.listener = new ChuckLocationListener();
         Button btnRecord = (Button) findViewById(R.id.button_record);
-        btnRecord.setOnClickListener(new RecordButtonListener(this, btnRecord));
+        btnRecord.setOnClickListener(new RecordButtonListener(this, btnRecord, manager, listener));
         Button btnShowMap = (Button) findViewById(R.id.button_showmap);
         btnShowMap.setOnClickListener(new ShowMapButtonListener(this));
         Button btnSettings = (Button) findViewById(R.id.button_settings);
@@ -156,9 +158,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ActivityCompat.requestPermissions(this, permissions, 0);
 
         this.manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
+        if(listener != null ){
+            listener.setMap(map);
+        }
         Criteria criteria = new Criteria();
-        ChuckLocationListener listener = new ChuckLocationListener(map);
+
         try {
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
         } catch (SecurityException e) {
@@ -184,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             location.setLongitude(13.451358);
         }
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(location.getLatitude(), location.getLongitude()), 13));
+                new LatLng(location.getLatitude(), location.getLongitude()), 14));
 
         List<AccFix> fixes = DataStore.getInstance(this).getFixes();
 
@@ -210,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         System.out.println("points: " + points.size());
         if (points.size() > 0) {
             tileProvider = new HeatmapTileProvider.Builder().weightedData(points).build();
-            tileOverlay = map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
         }
 
         setUpdateMapPossible();
