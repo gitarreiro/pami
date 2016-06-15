@@ -97,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (updateHandler != null) {
             stopUpdatingMap();
         }
-        //DataStore.getInstance(this).closeDB();
     }
 
     @Override

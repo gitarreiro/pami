@@ -25,13 +25,12 @@ public class AccFix implements Cloneable {
         System.out.println("creating AccFix from: ");
         System.out.println(saveString);
         String[] splitted = saveString.split(";");
-        System.out.println(saveString);
         double x = Double.parseDouble(splitted[0]);
         double y = Double.parseDouble(splitted[1]);
         double z = Double.parseDouble(splitted[2]);
         double gForce = Double.parseDouble(splitted[3]);
         Location location = null;
-        if (splitted.length == 6) {
+        if (splitted.length == 7) {
             double latitude = Double.parseDouble(splitted[4]);
             double longitude = Double.parseDouble(splitted[5]);
             String provider = splitted[6];
