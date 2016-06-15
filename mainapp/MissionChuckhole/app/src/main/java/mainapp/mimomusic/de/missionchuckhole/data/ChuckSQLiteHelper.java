@@ -36,6 +36,7 @@ public class ChuckSQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase database) {
+        System.out.println("ChuckSQLiteHelper.onCreate() called");
         database.execSQL(DATABASE_CREATE);
     }
 

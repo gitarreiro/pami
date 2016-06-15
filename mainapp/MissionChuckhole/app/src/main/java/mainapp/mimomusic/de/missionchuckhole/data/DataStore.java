@@ -22,12 +22,20 @@ public class DataStore {
     private String[] allColumns = {ChuckSQLiteHelper.COLUMN_ID,
             ChuckSQLiteHelper.COLUMN_FIX};
 
+
+
+
+
+
     private DataStore(Context context) {
         dbHelper = new ChuckSQLiteHelper(context);
-        openDB();
-
-        dropTable(ChuckSQLiteHelper.TABLE_FIXES);
+        dropDatabase();
+        //dropTable(ChuckSQLiteHelper.TABLE_FIXES);
         loadFixes(context);
+    }
+
+    private void dropDatabase(){
+
     }
 
     public static DataStore getInstance(Context context) {
@@ -37,27 +45,44 @@ public class DataStore {
         return instance;
     }
 
+    /*
     private void openDB() throws SQLException {
         if(database==null) {
             database = dbHelper.getWritableDatabase();
         }
     }
-
+*/
     public void closeDB() {
         dbHelper.close();
     }
 
     private void dropTable(String tableName) {
-        database.execSQL("DROP TABLE IF EXISTS " + tableName);
+        try{
+            database = dbHelper.getWritableDatabase();
+            database.execSQL("DROP TABLE IF EXISTS " + tableName);
+        }finally{
+            if (database != null && database.isOpen()) {
+                database.close();
+            }
+        }
     }
 
     public void storeFix(AccFix fix) {
-        openDB();
 
         this.fixes.add(fix);
-        ContentValues values = new ContentValues();
-        values.put(ChuckSQLiteHelper.COLUMN_FIX, fix.toString());
-        database.insert(ChuckSQLiteHelper.TABLE_FIXES, null, values);
+        try{
+            database = dbHelper.getWritableDatabase();
+            synchronized (database) {
+                ContentValues values = new ContentValues();
+                values.put(ChuckSQLiteHelper.COLUMN_FIX, fix.toString());
+                database.insert(ChuckSQLiteHelper.TABLE_FIXES, null, values);
+
+            }
+        }finally{
+            if (database != null && database.isOpen()) {
+                database.close();
+            }
+        }
     }
 
 
@@ -66,26 +91,40 @@ public class DataStore {
     }
 
     private void loadFixes(Context context) {
-        openDB();
-
+       /* try{
+            database = dbHelper.getWritableDatabase();
+        }finally{
+            if (database != null && database.isOpen()) {
+                database.close();
+            }
+        }
+*/
         fixes = new ArrayList<>();
 
 
         try {
-            Cursor cursor = database.query(ChuckSQLiteHelper.TABLE_FIXES,
-                    allColumns, null, null, null, null, null);
+            try{
+                database = dbHelper.getWritableDatabase();
+                Cursor cursor = database.query(ChuckSQLiteHelper.TABLE_FIXES,
+                        allColumns, null, null, null, null, null);
 
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                AccFix fix = cursorToAccFix(cursor);
-                fixes.add(fix);
-                cursor.moveToNext();
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    AccFix fix = cursorToAccFix(cursor);
+                    fixes.add(fix);
+                    cursor.moveToNext();
+                }
+                // make sure to close the cursor
+                cursor.close();
+            } finally {
+                if (database != null && database.isOpen()) {
+                    database.close();
+                }
             }
-            // make sure to close the cursor
-            cursor.close();
         }catch (SQLException e) {
             e.printStackTrace();
         }
+
 
     }
 
