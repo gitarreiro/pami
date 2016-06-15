@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private HeatmapTileProvider tileProvider;
     private TileOverlay tileOverlay;
     private boolean isRecording;
+    private LocationManager manager;
     private boolean isUpdateMapPossible;
     private Handler updateHandler;
     Runnable updateRunnable = new Runnable() {
@@ -66,8 +67,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
-
-    //TODO AccFix rausschmeißen ohne Location
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onDestroy() {
         super.onDestroy();
         System.out.println("onDestroy() called");
-        //TODO check if double persisting can make problems
     }
 
     private void init() {
@@ -157,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Manifest.permission.WRITE_EXTERNAL_STORAGE};
         ActivityCompat.requestPermissions(this, permissions, 0);
 
-        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        this.manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         Criteria criteria = new Criteria();
         ChuckLocationListener listener = new ChuckLocationListener(map);
@@ -212,16 +210,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         System.out.println("points: " + points.size());
         if (points.size() > 0) {
             tileProvider = new HeatmapTileProvider.Builder().weightedData(points).build();
-
             tileOverlay = map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
-            //tileOverlay.setVisible(false);
-
         }
 
-
         setUpdateMapPossible();
-
-
     }
 
     private void setUpdateMapPossible() {
