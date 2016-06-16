@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,7 +33,6 @@ import mainapp.mimomusic.de.missionchuckhole.data.AccFix;
 import mainapp.mimomusic.de.missionchuckhole.data.DataStore;
 import mainapp.mimomusic.de.missionchuckhole.listener.ChuckLocationListener;
 import mainapp.mimomusic.de.missionchuckhole.listener.RecordButtonListener;
-import mainapp.mimomusic.de.missionchuckhole.listener.SettingsButtonListener;
 import mainapp.mimomusic.de.missionchuckhole.listener.ShowMapButtonListener;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int retryInterval = 1000;
     private GoogleMap map;
     private HeatmapTileProvider tileProvider;
+    private TileOverlay overlay;
     private boolean isRecording;
     private LocationManager manager;
     private ChuckLocationListener listener;
@@ -49,8 +50,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
-            //TODO update map here
-            System.out.println("doing map update");
+            drawHeatmap();
             if (updateHandler != null) {
                 updateHandler.postDelayed(updateRunnable, updateInterval);
             }
@@ -85,8 +85,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
 
         init();
-        // test
-
     }
 
     @Override
@@ -116,12 +114,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void init() {
         this.manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         this.listener = new ChuckLocationListener();
-        Button btnRecord = (Button) findViewById(R.id.button_record);
+        ImageButton btnRecord = (ImageButton) findViewById(R.id.button_record);
         btnRecord.setOnClickListener(new RecordButtonListener(this, btnRecord, manager, listener));
-        Button btnShowMap = (Button) findViewById(R.id.button_showmap);
+        ImageButton btnShowMap = (ImageButton) findViewById(R.id.button_showmap);
         btnShowMap.setOnClickListener(new ShowMapButtonListener(this));
-        Button btnSettings = (Button) findViewById(R.id.button_settings);
-        btnSettings.setOnClickListener(new SettingsButtonListener(this));
+        //Button btnSettings = (Button) findViewById(R.id.button_settings);
+        //btnSettings.setOnClickListener(new SettingsButtonListener(this));
     }
 
 
@@ -158,25 +156,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ActivityCompat.requestPermissions(this, permissions, 0);
 
         this.manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if(listener != null ){
+        if (listener != null) {
             listener.setMap(map);
         }
         Criteria criteria = new Criteria();
-
+/*
         try {
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
         } catch (SecurityException e) {
             e.printStackTrace();
         }
-
+*/
 
         Location location = null;
         try {
             System.out.println("best provider: " + manager.getBestProvider(criteria, false));
             location = manager.getLastKnownLocation(manager.getBestProvider(criteria, false));
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
+        } catch (SecurityException | IllegalStateException e) {
             e.printStackTrace();
         }
 
@@ -190,34 +186,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(location.getLatitude(), location.getLongitude()), 14));
 
+
+        drawHeatmap();
+
+
+        setUpdateMapPossible();
+    }
+
+    private void drawHeatmap() {
         List<AccFix> fixes = DataStore.getInstance(this).getFixes();
 
-        System.out.println("eingelesene fixes: "+fixes.size());
+        System.out.println("eingelesene fixes: " + fixes.size());
 
         List<WeightedLatLng> points = new ArrayList<>();
 
         for (AccFix fix : fixes) {
-            //create WeightedLatLng and add it to list TODO
+            //create WeightedLatLng and add it to list
             Location fixLocation = fix.getLocation();
             if (fixLocation != null) {
                 double latitude = fixLocation.getLatitude();
                 double longitude = fixLocation.getLongitude();
                 double intensity = fix.getgForce() / 6.0;
-                System.out.println("intensity is " + intensity);
                 WeightedLatLng wll = new WeightedLatLng(new LatLng(latitude, longitude), intensity);
                 points.add(wll);
-            } else {
-                System.out.println("location is null: " + fix);
             }
         }
 
-        System.out.println("points: " + points.size());
         if (points.size() > 0) {
             tileProvider = new HeatmapTileProvider.Builder().weightedData(points).build();
-            map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
-        }
 
-        setUpdateMapPossible();
+            if (overlay != null) {
+                overlay.remove();
+            }
+
+            overlay = map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+        }
     }
 
     private void setUpdateMapPossible() {

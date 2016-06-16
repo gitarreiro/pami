@@ -1,10 +1,13 @@
 package mainapp.mimomusic.de.missionchuckhole.listener;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
+import mainapp.mimomusic.de.missionchuckhole.R;
 import mainapp.mimomusic.de.missionchuckhole.activity.MainActivity;
 import mainapp.mimomusic.de.missionchuckhole.activity.MapActivity;
 import mainapp.mimomusic.de.missionchuckhole.service.RecordService;
@@ -15,17 +18,23 @@ import mainapp.mimomusic.de.missionchuckhole.service.RecordService;
 public class RecordButtonListener implements View.OnClickListener {
 
     private MainActivity activity;
-    private Button btn;
+    private ImageButton btn;
     private LocationManager manager;
     private ChuckLocationListener listener;
     private boolean isRecording;
+    private Drawable btnPressedDrawable;
+    private Drawable btnReleasedDrawable;
 
-    public RecordButtonListener(MainActivity activity, Button btn, LocationManager manager, ChuckLocationListener listener) {
+    public RecordButtonListener(MainActivity activity, ImageButton btn, LocationManager manager, ChuckLocationListener listener) {
         this.activity = activity;
         this.btn = btn;
         this.manager = manager;
         this.listener = listener;
         this.isRecording = false;
+
+        btnReleasedDrawable = activity.getResources().getDrawable( R.drawable.icon_record );
+        btnPressedDrawable = activity.getResources().getDrawable(R.drawable.icon_record_pressed);
+
     }
 
     @Override
@@ -33,7 +42,8 @@ public class RecordButtonListener implements View.OnClickListener {
         // start recording: service? just record and store data periodically
         this.isRecording = !this.isRecording;
         if (isRecording) {
-            btn.setText("STOP RECORDING");
+            //btn.setText("STOP RECORDING");
+            btn.setBackground(btnPressedDrawable);
             if (manager != null && listener != null && listener.getMap() != null) {
                 try {
                     manager.removeUpdates(listener);
@@ -46,7 +56,8 @@ public class RecordButtonListener implements View.OnClickListener {
             activity.startService(intent);
             activity.startUpdatingMap();
         } else {
-            btn.setText("START RECORDING");
+            //btn.setText("START RECORDING");
+            btn.setBackground(btnReleasedDrawable);
             if (manager != null && listener != null && listener.getMap() != null) {
                 try {
                     manager.removeUpdates(listener);

@@ -94,7 +94,6 @@ public class AccelerationListener implements SensorEventListener {
         if (lastLocation != null
                 && lastLocation.getLatitude() == location.getLatitude()
                 && lastLocation.getLongitude() == location.getLongitude()) {
-            System.out.println("returning");
             return;
         }
 
