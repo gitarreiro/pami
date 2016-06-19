@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,8 +19,9 @@
 
 
         <!-- Activity declarations -->
-        <activity
-            android:name=".activity.MainActivity"
+
+
+        <activity android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -29,6 +31,7 @@
             </intent-filter>
         </activity>
 
+
         <activity android:name=".activity.SettingsActivity">
             <action android:name="android.intent.action.MAIN" />
         </activity>
@@ -36,6 +39,7 @@
         <activity android:name=".activity.MapActivity">
             <action android:name="android.intent.action.MAIN" />
         </activity>
+
 
         <!-- Service declarations -->
         <service

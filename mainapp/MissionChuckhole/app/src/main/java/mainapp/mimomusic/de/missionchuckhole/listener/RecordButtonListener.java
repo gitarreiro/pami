@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import mainapp.mimomusic.de.missionchuckhole.R;

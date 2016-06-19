@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +27,8 @@ public class DataStore {
 
 
 
+    private SimpleXYSeries gForceHistorySeries;
+    private XYPlot accGraph;
 
 
 
@@ -45,13 +50,7 @@ public class DataStore {
         return instance;
     }
 
-    /*
-    private void openDB() throws SQLException {
-        if(database==null) {
-            database = dbHelper.getWritableDatabase();
-        }
-    }
-*/
+
     public void closeDB() {
         dbHelper.close();
     }
@@ -91,14 +90,7 @@ public class DataStore {
     }
 
     private void loadFixes(Context context) {
-       /* try{
-            database = dbHelper.getWritableDatabase();
-        }finally{
-            if (database != null && database.isOpen()) {
-                database.close();
-            }
-        }
-*/
+
         fixes = new ArrayList<>();
 
 
@@ -131,5 +123,22 @@ public class DataStore {
     private AccFix cursorToAccFix(Cursor cursor) {
         String saveString = cursor.getString(1);
         return AccFix.fromString(saveString);
+    }
+
+
+    public void setgForceHistorySeries(SimpleXYSeries series){
+        this.gForceHistorySeries = series;
+    }
+
+    public SimpleXYSeries getgForceHistorySeries() {
+        return gForceHistorySeries;
+    }
+
+    public void setAccGraph(XYPlot accGraph) {
+        this.accGraph = accGraph;
+    }
+
+    public XYPlot getAccGraph() {
+        return accGraph;
     }
 }
