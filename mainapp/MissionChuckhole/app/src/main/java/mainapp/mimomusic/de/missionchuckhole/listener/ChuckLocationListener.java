@@ -43,6 +43,7 @@ public class ChuckLocationListener implements LocationListener {
 
         //map.addMarker(mp);
 
+
         if (location == null) {
 
             //create dummy location: Uni Passau
@@ -50,7 +51,6 @@ public class ChuckLocationListener implements LocationListener {
             location.setLatitude(48.566827);
             location.setLongitude(13.451358);
         }
-
         float zoomLevel = map.getCameraPosition().zoom;
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(location.getLatitude(), location.getLongitude()), zoomLevel));

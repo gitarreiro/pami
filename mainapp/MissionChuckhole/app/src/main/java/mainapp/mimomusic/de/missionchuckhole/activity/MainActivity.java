@@ -2,6 +2,7 @@ package mainapp.mimomusic.de.missionchuckhole.activity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,14 +10,19 @@ import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toolbar;
 
 import com.androidplot.xy.XYPlot;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -95,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Graph plot for the UI outputs
     private DynamicLinePlot dynamicPlot;
 
+    private ImageView ivCycling;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
@@ -104,8 +112,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+
+        android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.app_name);
+        setSupportActionBar(toolbar);
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -128,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void run() {
                 handler.postDelayed(this, 10);
-
                 plotData();
             }
         };
@@ -168,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         ImageButton btnRecord = (ImageButton) findViewById(R.id.button_record);
         btnRecord.setOnClickListener(new RecordButtonListener(this, btnRecord, manager, listener));
 
+        this.ivCycling = (ImageView) findViewById(R.id.iv_cycling);
 
         //Button btnSettings = (Button) findViewById(R.id.button_settings);
         //btnSettings.setOnClickListener(new SettingsButtonListener(this));
@@ -187,8 +199,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //MenuInflater inflater = getMenuInflater();
-        //inflater.inflate(R.menu.menu_logger, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -198,20 +210,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        /*switch (item.getItemId()) {
+        switch (item.getItemId()) {
             // Log the data
-            //case R.id.action_settings_sensor:
-                return true;
+            case R.id.action_settings:
 
-            // Start the vector activity
-            case R.id.action_help:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
-        */
-        return true;
     }
 
     @Override
@@ -381,6 +391,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void startUpdatingMap(boolean fromButtonClick) {
         tryUpdateRunnable.run();
         this.isRecording = true;
+        this.ivCycling.setVisibility(View.VISIBLE);
         initPlots();
         if (fromButtonClick) {
             addAccelerationPlot();
@@ -390,6 +401,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void stopUpdatingMap(boolean fromOnPause) {
         updateHandler.removeCallbacks(updateRunnable);
         this.isRecording = false;
+        this.ivCycling.setVisibility(View.GONE);
         //removeGraphPlot(PLOT_ACCEL_G_FORCE_KEY);
         if (!fromOnPause) {
             removeGraphData();

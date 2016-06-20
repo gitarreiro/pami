@@ -80,6 +80,7 @@ public class AccelerationListener implements SensorEventListener {
             return;
         }
 
+
         //location is equal to last location, maybe TODO: exchange last AccFix if accuracy is better now
         if (lastLocation != null
                 && lastLocation.getLatitude() == location.getLatitude()
