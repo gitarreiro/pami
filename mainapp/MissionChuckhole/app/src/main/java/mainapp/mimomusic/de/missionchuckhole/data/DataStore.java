@@ -27,11 +27,6 @@ public class DataStore {
 
 
 
-    private SimpleXYSeries gForceHistorySeries;
-    private XYPlot accGraph;
-
-
-
     private DataStore(Context context) {
         dbHelper = new ChuckSQLiteHelper(context);
         dropDatabase();
@@ -68,6 +63,8 @@ public class DataStore {
 
     public void storeFix(AccFix fix) {
 
+        // TODO überprüfen, ob fix schon in den gespeicherten ist
+
         this.fixes.add(fix);
         try{
             database = dbHelper.getWritableDatabase();
@@ -75,7 +72,6 @@ public class DataStore {
                 ContentValues values = new ContentValues();
                 values.put(ChuckSQLiteHelper.COLUMN_FIX, fix.toString());
                 database.insert(ChuckSQLiteHelper.TABLE_FIXES, null, values);
-
             }
         }finally{
             if (database != null && database.isOpen()) {
@@ -117,6 +113,8 @@ public class DataStore {
             e.printStackTrace();
         }
 
+        System.out.println("DataStore: loaded "+fixes.size() + " AccFixes.");
+
 
     }
 
@@ -126,19 +124,4 @@ public class DataStore {
     }
 
 
-    public void setgForceHistorySeries(SimpleXYSeries series){
-        this.gForceHistorySeries = series;
-    }
-
-    public SimpleXYSeries getgForceHistorySeries() {
-        return gForceHistorySeries;
-    }
-
-    public void setAccGraph(XYPlot accGraph) {
-        this.accGraph = accGraph;
-    }
-
-    public XYPlot getAccGraph() {
-        return accGraph;
-    }
 }

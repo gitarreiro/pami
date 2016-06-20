@@ -220,12 +220,26 @@ public class DynamicLinePlot
 	 */
 	public void removeSeriesPlot(int key)
 	{
+
+
+		if(history.get(key) == null){
+			return;
+		}
+
 		plot.removeSeries(series.get(key));
 
-		history.get(key).removeAll(history.get(key));
+
+
+		history.get(key).removeAll(history.get(key)); //TODO hier is null
 		history.remove(key);
 
 		series.remove(key);
+	}
+
+	public void removeData(int key) {
+		history.get(key).removeAll(history.get(key));
+		series.get(key).setModel(null,
+				SimpleXYSeries.ArrayFormat.Y_VALS_ONLY);
 	}
 
 	/**
@@ -233,18 +247,17 @@ public class DynamicLinePlot
 	 */
 	private void initPlot()
 	{
-		this.plot.setRangeBoundaries(minRange, maxRange,
-				BoundaryMode.FIXED);
+		this.plot.setRangeBoundaries(minRange, maxRange, BoundaryMode.FIXED);
 		this.plot.setDomainBoundaries(0, windowSize, BoundaryMode.FIXED);
 
 		this.plot.setDomainStepValue(5);
 		this.plot.setTicksPerRangeLabel(3);
-		this.plot.setDomainLabel("Update #");
-		this.plot.getDomainLabelWidget().pack();
-		this.plot.setRangeLabel("Meter's/Sec^2");
-		this.plot.getRangeLabelWidget().pack();
-		this.plot.getLegendWidget().setWidth(0.7f);
-		this.plot.setGridPadding(15, 15, 15, 15);
+		//this.plot.setDomainLabel("Update #");
+		//this.plot.getDomainLabelWidget().pack();
+		//this.plot.setRangeLabel("Meter's/Sec^2");
+		//this.plot.getRangeLabelWidget().pack();
+		//this.plot.getLegendWidget().setWidth(0.7f);
+		this.plot.setGridPadding(0, 15, 15, 15);
 
 		this.plot.getGraphWidget().setGridBackgroundPaint(null);
 		this.plot.getGraphWidget().setBackgroundPaint(null);
@@ -263,19 +276,19 @@ public class DynamicLinePlot
 		this.plot.setBackgroundPaint(null);
 		
 		Resources r = context.getResources();
-		float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+		float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
 				r.getDisplayMetrics());
 		
 		plot.getLegendWidget().getTextPaint().setTextSize(px);
 		
-		plot.getDomainLabelWidget().getLabelPaint().setTextSize(px);
-		plot.getDomainLabelWidget().setSize(
-				new SizeMetrics(0.05f, SizeLayoutType.RELATIVE, 0.08f,
-						SizeLayoutType.RELATIVE));
-		plot.getDomainLabelWidget().setPositionMetrics(
-				new PositionMetrics(0.07f, XLayoutStyle.RELATIVE_TO_LEFT, 0,
-						YLayoutStyle.RELATIVE_TO_BOTTOM,
-						AnchorPosition.LEFT_BOTTOM));
+		//plot.getDomainLabelWidget().getLabelPaint().setTextSize(px);
+		//plot.getDomainLabelWidget().setSize(
+		//		new SizeMetrics(0.05f, SizeLayoutType.RELATIVE, 0.08f,
+		//				SizeLayoutType.RELATIVE));
+		//plot.getDomainLabelWidget().setPositionMetrics(
+		//		new PositionMetrics(0.07f, XLayoutStyle.RELATIVE_TO_LEFT, 0,
+		//				YLayoutStyle.RELATIVE_TO_BOTTOM,
+		//				AnchorPosition.LEFT_BOTTOM));
 		
 		plot.getDomainLabelWidget().setClippingEnabled(false);
 
@@ -328,7 +341,7 @@ public class DynamicLinePlot
 				r.getDisplayMetrics());
 
 		plot.getGraphWidget().setDomainLabelWidth(px);
-
+/*
 		plot.getLegendWidget().getTextPaint().setTextSize(px);
 
 		plot.getLegendWidget().position(-0.4f, XLayoutStyle.RELATIVE_TO_CENTER,
@@ -337,7 +350,7 @@ public class DynamicLinePlot
 		plot.getLegendWidget().setSize(
 				new SizeMetrics(0.15f, SizeLayoutType.RELATIVE, 0.5f,
 						SizeLayoutType.RELATIVE));
-
+*/
 		this.plot.redraw();
 	}
 }

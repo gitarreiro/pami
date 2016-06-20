@@ -53,7 +53,7 @@ public class RecordButtonListener implements View.OnClickListener {
             }
             Intent intent = new Intent(this.activity, RecordService.class);
             activity.startService(intent);
-            activity.startUpdatingMap();
+            activity.startUpdatingMap(true);
         } else {
             //btn.setText("START RECORDING");
             btn.setBackground(btnReleasedDrawable);
@@ -66,7 +66,7 @@ public class RecordButtonListener implements View.OnClickListener {
             }
             Intent intent = new Intent(this.activity, RecordService.class);
             activity.stopService(intent);
-            activity.stopUpdatingMap();
+            activity.stopUpdatingMap(false);
             Intent showMapIntent = new Intent(this.activity, MapActivity.class);
             activity.startActivity(showMapIntent);
         }

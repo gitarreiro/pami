@@ -2,7 +2,6 @@ package mainapp.mimomusic.de.missionchuckhole.activity;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -16,10 +15,7 @@ import android.support.multidex.MultiDex;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.androidplot.xy.XYPlot;
@@ -56,11 +52,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static final int updateInterval = 500; //0,5 Sekunden
     private static final int retryInterval = 1000;
     // Plot keys for the acceleration plot
-    private final static int PLOT_ACCEL_X_AXIS_KEY = 0;
-    private final static int PLOT_ACCEL_Y_AXIS_KEY = 1;
-    private final static int PLOT_ACCEL_Z_AXIS_KEY = 2;
+    private final static int PLOT_ACCEL_G_FORCE_KEY = 0;
     // Outputs for the acceleration and LPFs
     protected volatile float[] acceleration = new float[3];
+    protected volatile double gForce;
     // Handler for the UI plots so everything plots smoothly
     protected Handler handler;
     protected Runnable runnable;
@@ -95,9 +90,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     };
     // Color keys for the acceleration plot
-    private int plotAccelXAxisColor;
-    private int plotAccelYAxisColor;
-    private int plotAccelZAxisColor;
+    private int plotAccelGForceColor;
 
     // Graph plot for the UI outputs
     private DynamicLinePlot dynamicPlot;
@@ -150,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         handler.removeCallbacks(runnable);
         System.out.println("onPause() called");
         if (updateHandler != null) {
-            stopUpdatingMap();
+            stopUpdatingMap(true);
         }
     }
 
@@ -233,6 +226,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // Get a local copy of the sensor values
             System.arraycopy(event.values, 0, acceleration, 0,
                     event.values.length);
+            double x = event.values[0];
+            double y = event.values[1];
+            double z = event.values[2];
+            this.gForce = Math.sqrt(x * x + y * y + z * z) / SensorManager.GRAVITY_EARTH;
 
 
         }
@@ -242,12 +239,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * Create the output graph line chart.
      */
     private void addAccelerationPlot() {
-        addGraphPlot("X-Axis", PLOT_ACCEL_X_AXIS_KEY,
-                plotAccelXAxisColor);
-        addGraphPlot("Y-Axis", PLOT_ACCEL_Y_AXIS_KEY,
-                plotAccelYAxisColor);
-        addGraphPlot("Z-Axis", PLOT_ACCEL_Z_AXIS_KEY,
-                plotAccelZAxisColor);
+        addGraphPlot("G-Force", PLOT_ACCEL_G_FORCE_KEY, plotAccelGForceColor);
+        //addGraphPlot("X-Axis", PLOT_ACCEL_X_AXIS_KEY,
+        //        plotAccelXAxisColor);
+        //addGraphPlot("Y-Axis", PLOT_ACCEL_Y_AXIS_KEY,
+        //        plotAccelYAxisColor);
+        //addGraphPlot("Z-Axis", PLOT_ACCEL_Z_AXIS_KEY,
+        //        plotAccelZAxisColor);
     }
 
     /**
@@ -267,9 +265,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void initColor() {
         PlotColor color = new PlotColor(this);
 
-        plotAccelXAxisColor = color.getDarkBlue();
-        plotAccelYAxisColor = color.getDarkGreen();
-        plotAccelZAxisColor = color.getDarkRed();
+        plotAccelGForceColor = color.getDarkOrange();
     }
 
     /**
@@ -279,12 +275,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Create the graph plot
         XYPlot plot = (XYPlot) findViewById(R.id.plot_sensor);
 
-        plot.setTitle("Acceleration");
         dynamicPlot = new DynamicLinePlot(plot, this);
-        dynamicPlot.setMaxRange(20);
-        dynamicPlot.setMinRange(-20);
+        dynamicPlot.setMaxRange(7);
+        dynamicPlot.setMinRange(0);
 
-        addAccelerationPlot();
     }
 
 
@@ -292,11 +286,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * Plot the output data in the UI.
      */
     private void plotData() {
-        dynamicPlot.setData(acceleration[0], PLOT_ACCEL_X_AXIS_KEY);
-        dynamicPlot.setData(acceleration[1], PLOT_ACCEL_Y_AXIS_KEY);
-        dynamicPlot.setData(acceleration[2], PLOT_ACCEL_Z_AXIS_KEY);
+        if (isRecording) {
+            dynamicPlot.setData(gForce, PLOT_ACCEL_G_FORCE_KEY);
+            dynamicPlot.draw();
+        }
 
-        dynamicPlot.draw();
     }
 
     /**
@@ -384,14 +378,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         updateHandler = new Handler();
     }
 
-    public void startUpdatingMap() {
+    public void startUpdatingMap(boolean fromButtonClick) {
         tryUpdateRunnable.run();
         this.isRecording = true;
+        initPlots();
+        if (fromButtonClick) {
+            addAccelerationPlot();
+        }
     }
 
-    public void stopUpdatingMap() {
+    public void stopUpdatingMap(boolean fromOnPause) {
         updateHandler.removeCallbacks(updateRunnable);
         this.isRecording = false;
+        //removeGraphPlot(PLOT_ACCEL_G_FORCE_KEY);
+        if (!fromOnPause) {
+            removeGraphData();
+        }
+    }
+
+    private void removeGraphData() {
+        dynamicPlot.removeData(PLOT_ACCEL_G_FORCE_KEY);
+        dynamicPlot.draw();
+        dynamicPlot.removeSeriesPlot(PLOT_ACCEL_G_FORCE_KEY);
     }
 
 }

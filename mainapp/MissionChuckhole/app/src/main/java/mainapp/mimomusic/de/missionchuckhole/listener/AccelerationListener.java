@@ -1,7 +1,6 @@
 package mainapp.mimomusic.de.missionchuckhole.listener;
 
 import android.content.Context;
-import android.graphics.DashPathEffect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,12 +9,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
-import com.androidplot.xy.SimpleXYSeries;
-import com.androidplot.xy.XYPlot;
-
 import mainapp.mimomusic.de.missionchuckhole.data.AccFix;
 import mainapp.mimomusic.de.missionchuckhole.data.DataStore;
-import mainapp.mimomusic.de.missionchuckhole.util.Constants;
 
 /**
  * Created by MiMo
@@ -23,14 +18,9 @@ import mainapp.mimomusic.de.missionchuckhole.util.Constants;
 public class AccelerationListener implements SensorEventListener {
     private Context context;
     private Location lastLocation;
-    private SimpleXYSeries series;
-    private XYPlot accGraph;
 
     public AccelerationListener(Context context) {
         this.context = context;
-        //dynamicPlot = DataStore.getInstance(context).getDynamicPlot(); //TODO avoid crash
-        series = DataStore.getInstance(context).getgForceHistorySeries();
-        accGraph = DataStore.getInstance(context).getAccGraph();
     }
 
     @Override
@@ -41,11 +31,6 @@ public class AccelerationListener implements SensorEventListener {
         float z = event.values[2];
 
         double gForce = Math.sqrt(x * x + y + y + z * z) / SensorManager.GRAVITY_EARTH;
-
-
-
-
-
 
 
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -63,7 +48,6 @@ public class AccelerationListener implements SensorEventListener {
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // no network provider is enabled
             } else {
-                //ChuckLocationListener locationListener = new ChuckLocationListener();
 
 
                 // First get location from Network Provider
