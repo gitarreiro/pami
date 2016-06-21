@@ -7,6 +7,7 @@ package mainapp.mimomusic.de.missionchuckhole.data;
  Created by Marwan on 18/06/2016.
  */
 public class MyItem implements ClusterItem {
+
     private final LatLng mPosition;
 
     public MyItem(double lat, double lng) {

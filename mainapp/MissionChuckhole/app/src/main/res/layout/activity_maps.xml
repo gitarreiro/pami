@@ -8,4 +8,5 @@
     tools:context=".activity.MapActivity"
     map:uiZoomControls="true"
     map:uiCompass="true"
+
     />
