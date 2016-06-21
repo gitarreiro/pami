@@ -1,4 +1,4 @@
-package com.example.marwan.googlemap;
+package mainapp.mimomusic.de.missionchuckhole.activitiy;
 
 import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
@@ -23,7 +23,7 @@ import java.util.List;
 
 
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private HeatmapTileProvider mProvider;
