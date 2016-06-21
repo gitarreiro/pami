@@ -4,8 +4,8 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
@@ -21,7 +21,6 @@ import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,13 +32,11 @@ import mainapp.mimomusic.de.missionchuckhole.data.MyItem;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    ClusterManager<MyItem> mClusterManager;
     private GoogleMap mMap;
     private HeatmapTileProvider mProvider1, mProvider2, mProvider3;
     private TileOverlay mOverlay;
     private List<AccFix> records = new ArrayList<>();
-    ClusterManager<MyItem> mClusterManager;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,36 +66,33 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
      */
 
 
-
-    public void onMapReady(GoogleMap googleMap)
-    {
+    public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         } else {
-            System.out.println("permission required");
+            System.out.println("permission required"); //TODO request permission, and request it for FINE and COARSE Location
         }
 
 
-       clustering();
-       dynamic_heatmap();
-       //static_heatmap();
+        clustering();
+        dynamic_heatmap();
+        //static_heatmap();
 
 
     }
 
-     public void clustering ()
-    {
+    public void clustering() {
         double lat, lng, intensity;
         Location L;
         // Position the map.
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(48.719372, 13.383121), 14));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(48.719372, 13.383121), 14)); //TODO zoom to the current position (getLastKnownLocaion)
 
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager <MyItem>(this, mMap);
+        mClusterManager = new ClusterManager<MyItem>(this, mMap);
 
         // Point the map's listeners at the listeners implemented by the cluster manager.
         mMap.setOnCameraChangeListener(mClusterManager);
@@ -106,7 +100,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         // Add cluster items (markers) to the cluster manager.
 
-       records = DataStore.getInstance(this).getFixes();
+        records = DataStore.getInstance(this).getFixes();
 
         for (AccFix record : records) {
 
@@ -114,8 +108,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
             intensity = record.getgForce() / 5.0;
             System.out.println(intensity);
-            if (intensity>=0.233)
-            {
+            if (intensity >= 0.233) {
                 lat = L.getLatitude();
                 lng = L.getLongitude();
                 MyItem offsetItem = new MyItem(lat, lng);
@@ -128,14 +121,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     }
 
-    public void dynamic_heatmap ()
+    public void dynamic_heatmap()
 
     {
 
         // Choose location and move the camera
 
         //LatLng Passau = new LatLng(48.569303, 13.440118);
-        //LatLng Tittling = new LatLng(48.727804, 13.382363);
+        //LatLng Tittling = new LatLng(48.727804, 13.382363); TODO also here: use vurrent position
 
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Tittling,14));
 
@@ -149,50 +142,47 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             double lat = L.getLatitude();
             double lng = L.getLongitude();
             double intensity = record.getgForce() / 5.0;
-            if (intensity >=1)
-                intensity =1;
+            if (intensity >= 1)
+                intensity = 1;
 
             WeightedLatLng detection = new WeightedLatLng(new LatLng(lat, lng), intensity);
 
             list.add(detection);
         }
 
-            int[] Colors1 =
-            {
-                    //Color.rgb(102, 225, 0) // green
-                    Color.rgb(0, 255, 0),  //light green
-                    //Color.rgb(255, 255, 0), // yellow
-                    Color.rgb(255, 0, 0)  // red
-            };
+        int[] Colors1 =
+                {
+                        //Color.rgb(102, 225, 0) // green
+                        Color.rgb(0, 255, 0),  //light green
+                        //Color.rgb(255, 255, 0), // yellow
+                        Color.rgb(255, 0, 0)  // red
+                };
 
-            float[] StartPoints =
-            {
-                    0.2f, 1f
-            };
+        float[] StartPoints =
+                {
+                        0.2f, 1f
+                };
 
-            Gradient gradient1 = new Gradient(Colors1, StartPoints);
+        Gradient gradient1 = new Gradient(Colors1, StartPoints);
 
-            if (list.size()==0)
-                Toast.makeText(this, "inexistent dataset", Toast.LENGTH_SHORT).show();
-            else
-            {
-                mProvider1 = new HeatmapTileProvider.Builder()
-                        .weightedData(list)
-                        .radius(10)
-                        //.gradient(gradient1)
-                        .build();
+        if (list.size() == 0)
+            Toast.makeText(this, "inexistent dataset", Toast.LENGTH_SHORT).show();
+        else {
+            mProvider1 = new HeatmapTileProvider.Builder()
+                    .weightedData(list)
+                    .radius(10)
+                            //.gradient(gradient1)
+                    .build();
 
 
-                mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
-            }
-
+            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
+        }
 
 
     }
 
 
-    public void static_heatmap ()
-    {
+    public void static_heatmap() {
 
 
         List<LatLng> list1 = new ArrayList<>();
@@ -201,8 +191,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         List<AccFix> records = DataStore.getInstance(this).getFixes();
 
-        for (AccFix record : records)
-        {
+        for (AccFix record : records) {
             Location L = record.getLocation();
 
             double lat = L.getLatitude();
@@ -211,9 +200,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
             LatLng detection = new LatLng(lat, lng);
 
-            if (intensity <=1 && intensity >=0.8)
-            list3.add(detection);
-            else if (intensity>=0.4 && intensity <0.8)
+            if (intensity <= 1 && intensity >= 0.8)
+                list3.add(detection);
+            else if (intensity >= 0.4 && intensity < 0.8)
                 list2.add(detection);
             else
                 list1.add(detection);
@@ -243,10 +232,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         Gradient gradient3 = new Gradient(Colors3, StartPoints);
 
 
-        if (list1.size()==0 || list2.size()==0 || list3.size()==0)
+        if (list1.size() == 0 || list2.size() == 0 || list3.size() == 0)
             Toast.makeText(this, "inexistent dataset", Toast.LENGTH_SHORT).show();
-        else
-        {
+        else {
             mProvider1 = new HeatmapTileProvider.Builder()
                     .data(list1)
                     .radius(10)
@@ -274,7 +262,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         }
 
     }
-
 
 
 }

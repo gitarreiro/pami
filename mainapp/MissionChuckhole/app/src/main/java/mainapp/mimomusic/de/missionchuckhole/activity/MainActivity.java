@@ -119,6 +119,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setSupportActionBar(toolbar);
 
 
+        Intent intent = new Intent(this, OnboardingActivity.class); // war getBaseContext()
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+
+
+
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);

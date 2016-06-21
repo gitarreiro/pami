@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".OnboardingActivity"
+    tools:showIn="@layout/activity_onboarding">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/onboarding_title_2"
+        android:id="@+id/tv_onboarding_title_2"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp" />
+
+
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="217dp"
+        android:layout_centerInParent="true"
+        android:id="@+id/ll_iv_onboarding_3">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/guide_accgraph"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginTop="20dp"
+        android:layout_alignLeft="@+id/ll_iv_onboarding_3"
+        android:layout_alignStart="@+id/ll_iv_onboarding_3"
+        android:layout_alignRight="@+id/ll_iv_onboarding_3"
+        android:layout_alignEnd="@+id/ll_iv_onboarding_3"
+        android:text="@string/onboarding_description_2"
+        android:id="@+id/tv_onboarding_description_2"
+        android:layout_below="@+id/ll_iv_onboarding_3"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        >
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/btn_onboarding_2"
+            android:background="@drawable/cycling_lefttoright" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

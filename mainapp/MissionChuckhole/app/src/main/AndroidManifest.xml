@@ -31,6 +31,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.OnboardingActivity">
+            <action android:name="android.intent.action.MAIN" />
+        </activity>
 
         <activity android:name=".activity.SettingsActivity">
             <action android:name="android.intent.action.MAIN" />
