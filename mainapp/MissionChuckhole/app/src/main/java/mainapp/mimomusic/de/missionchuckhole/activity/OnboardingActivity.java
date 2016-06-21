@@ -97,7 +97,7 @@ public class OnboardingActivity extends Activity {
                     viewSwitcher.showPrevious();
                 }
             } catch (Exception e) {
-                // nothing
+                e.printStackTrace();
             }
             return false;
         }

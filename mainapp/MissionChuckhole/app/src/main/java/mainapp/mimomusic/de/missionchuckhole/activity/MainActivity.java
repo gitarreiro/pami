@@ -55,7 +55,7 @@ import mainapp.mimomusic.de.missionchuckhole.plot.PlotColor;
  */
 public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
 
-    private static final int updateInterval = 500; //0,5 Sekunden
+    private static final int updateInterval = 1000;
     private static final int retryInterval = 1000;
     // Plot keys for the acceleration plot
     private final static int PLOT_ACCEL_G_FORCE_KEY = 0;
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private LocationManager manager;
     private ChuckLocationListener listener;
     private boolean isUpdateMapPossible;
+    private TileOverlayOptions options;
     private Handler updateHandler;
     Runnable updateRunnable = new Runnable() {
         @Override
@@ -372,20 +373,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (fixLocation != null) {
                 double latitude = fixLocation.getLatitude();
                 double longitude = fixLocation.getLongitude();
-                double intensity = fix.getgForce() / 6.0;
+                double intensity = fix.getgForce() / 5.0;
                 WeightedLatLng wll = new WeightedLatLng(new LatLng(latitude, longitude), intensity);
                 points.add(wll);
             }
         }
 
         if (points.size() > 0) {
-            tileProvider = new HeatmapTileProvider.Builder().weightedData(points).build();
-
-            if (overlay != null) {
-                overlay.remove();
+            if(tileProvider == null ) {
+                tileProvider = new HeatmapTileProvider.Builder().weightedData(points).build();
             }
 
-            overlay = map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            tileProvider.setWeightedData(points);
+
+            if(overlay == null) {
+                overlay = map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            }
+
+
+            overlay.clearTileCache();
+
         }
     }
 
