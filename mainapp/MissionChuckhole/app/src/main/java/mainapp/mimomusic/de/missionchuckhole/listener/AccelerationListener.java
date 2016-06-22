@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import mainapp.mimomusic.de.missionchuckhole.data.AccFix;
 import mainapp.mimomusic.de.missionchuckhole.data.DataStore;

@@ -11,7 +11,6 @@ import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.multidex.MultiDex;
@@ -21,9 +20,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toolbar;
 
 import com.androidplot.xy.XYPlot;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -51,13 +50,14 @@ import mainapp.mimomusic.de.missionchuckhole.listener.ShowMapButtonListener;
 import mainapp.mimomusic.de.missionchuckhole.plot.DynamicLinePlot;
 import mainapp.mimomusic.de.missionchuckhole.plot.PlotColor;
 import mainapp.mimomusic.de.missionchuckhole.util.Constants;
+import mainapp.mimomusic.de.missionchuckhole.util.Util;
 
 /**
  * Created by MiMo
  */
 public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
 
-    private static final int updateInterval = 1000;
+    private static final int updateInterval = 5000;
     private static final int retryInterval = 1000;
     // Plot keys for the acceleration plot
     private final static int PLOT_ACCEL_G_FORCE_KEY = 0;
@@ -123,15 +123,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         SharedPreferences prefs = getSharedPreferences(Constants.PREFS_FILE, MODE_PRIVATE);
 
-        if(prefs.getBoolean(Constants.FIRST_APP_VISIT, true)){
+        if (prefs.getBoolean(Constants.FIRST_APP_VISIT, true)) {
 
-        Intent intent = new Intent(this, OnboardingActivity.class); // war getBaseContext()
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
+            Intent intent = new Intent(this, OnboardingActivity.class); // war getBaseContext()
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
 
-            // TODO uncomment this line to enable Onboarding just for the first app visit ||| prefs.edit().putBoolean(Constants.FIRST_APP_VISIT,  false);
+            prefs.edit().putBoolean(Constants.FIRST_APP_VISIT, false).commit();
         }
-
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -344,8 +343,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         Location location = null;
         try {
-            System.out.println("best provider: " + manager.getBestProvider(criteria, false));
-            location = manager.getLastKnownLocation(manager.getBestProvider(criteria, false));
+
+            String provider = manager.getBestProvider(criteria, false);
+            if (provider != null) {
+                location = manager.getLastKnownLocation(provider);
+            }
         } catch (SecurityException e) {
             e.printStackTrace();
         } catch (IllegalStateException e) {
@@ -373,6 +375,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         List<AccFix> fixes = DataStore.getInstance(this).getFixes();
 
         List<WeightedLatLng> points = new ArrayList<>();
+        List<LatLng> unweightedPoints = new ArrayList<>();
+
+        int counter = 0;
 
         for (AccFix fix : fixes) {
             //create WeightedLatLng and add it to list
@@ -380,20 +385,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (fixLocation != null) {
                 double latitude = fixLocation.getLatitude();
                 double longitude = fixLocation.getLongitude();
-                double intensity = fix.getgForce() / 5.0;
+                double intensity = fix.getgForce() / 6.0;
                 WeightedLatLng wll = new WeightedLatLng(new LatLng(latitude, longitude), intensity);
                 points.add(wll);
+                System.out.println("intensity is "+intensity);
             }
         }
 
+
         if (points.size() > 0) {
-            if(tileProvider == null ) {
+            if (tileProvider == null) {
                 tileProvider = new HeatmapTileProvider.Builder().weightedData(points).build();
+                tileProvider.setRadius(10);
+                //tileProvider.setGradient(Util.getMapGradient());
+                //tileProvider = new HeatmapTileProvider.Builder().data(unweightedPoints).build();
             }
 
             tileProvider.setWeightedData(points);
+            //tileProvider.setData(unweightedPoints);
 
-            if(overlay == null) {
+            if (overlay == null) {
                 overlay = map.addTileOverlay(new TileOverlayOptions().fadeIn(false).tileProvider(tileProvider));
             }
 
@@ -402,7 +413,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         }
     }
-//TODO onBackPressed
+
+    @Override
+    public void onBackPressed() {
+        //TODO onBackPressed
+
+        super.onBackPressed();
+    }
+
 
     private void setUpdateMapPossible() {
         this.isUpdateMapPossible = true;

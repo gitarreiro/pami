@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
@@ -66,7 +67,15 @@ public class DataStore {
         if(fixes.contains(fix)){
             return;
         }
+/*
+        Location home = new Location("dummy");
+        home.setLatitude(48.561960);
+        home.setLongitude(13.578143);
 
+        if(fix.getLocation().distanceTo(home) <50) {
+            return;
+        }
+*/
         this.fixes.add(fix);
         try{
             database = dbHelper.getWritableDatabase();
@@ -84,7 +93,22 @@ public class DataStore {
 
 
     public List<AccFix> getFixes() {
-        return this.fixes;
+        List<AccFix> tmp = new ArrayList<>();
+        Location home = new Location("dummy");
+        home.setLatitude(48.561960);
+        home.setLongitude(13.578143);
+        for(AccFix fix:fixes) {
+
+            if(fix.getLocation().distanceTo(home) <50) {
+                continue;
+            }
+
+            tmp.add(fix);
+        }
+        tmp.add(new AccFix(1,2,3,6,home));
+
+        return tmp;
+        //return this.fixes;
     }
 
     private void loadFixes(Context context) {
