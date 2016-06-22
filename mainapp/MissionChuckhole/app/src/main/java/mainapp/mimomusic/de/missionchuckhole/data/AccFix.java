@@ -63,6 +63,10 @@ public class AccFix implements Comparable {
         return location;
     }
 
+    public boolean isBigChuckhole() {
+        return this.gForce >= 3.5;
+    }
+
     @Override
     public int compareTo(Object another) {
 
