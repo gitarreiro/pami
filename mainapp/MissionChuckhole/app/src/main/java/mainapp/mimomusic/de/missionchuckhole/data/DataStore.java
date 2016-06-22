@@ -64,7 +64,9 @@ public class DataStore {
 
     public void storeFix(AccFix fix) {
 
-        // TODO überprüfen, ob fix schon in den gespeicherten ist
+        if(fixes.contains(fix)){
+            return;
+        }
 
         this.fixes.add(fix);
         try{

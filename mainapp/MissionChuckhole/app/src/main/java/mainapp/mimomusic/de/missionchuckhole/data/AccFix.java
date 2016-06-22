@@ -5,7 +5,7 @@ import android.location.Location;
 /**
  * Created by MiMo
  */
-public class AccFix implements Cloneable {
+public class AccFix implements Comparable {
 
     private double x;
     private double y;
@@ -62,20 +62,30 @@ public class AccFix implements Cloneable {
     public Location getLocation() {
         return location;
     }
-/*
-    public String toSaveString() {
-        String result = this.toString();
-        if (location != null) {
-            result += ";" + location.getProvider();
-        } else {
-            return null;
+
+    @Override
+    public int compareTo(Object another) {
+
+        if (!(another instanceof AccFix)) {
+            return -1;
         }
 
-        System.out.println("extracted savestring: ");
-        System.out.println(result);
+        AccFix fix = (AccFix) another;
+        if (this.location.getLatitude() < fix.location.getLatitude()) {
+            return -1;
+        } else if (this.location.getLatitude() == fix.location.getLatitude()) {
+            if(this.location.getLongitude() < fix.location.getLongitude()) {
+                return -1;
+            } else if (this.location.getLongitude() == fix.location.getLongitude()) {
+                return 0;
+            }
+        }
 
-        return result;
+        return 1;
     }
-*/
 
+    @Override
+    public boolean equals(Object o) {
+        return this.compareTo(o) == 0;
+    }
 }
