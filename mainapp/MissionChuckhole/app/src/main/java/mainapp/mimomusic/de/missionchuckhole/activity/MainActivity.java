@@ -3,6 +3,7 @@ package mainapp.mimomusic.de.missionchuckhole.activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -49,6 +50,7 @@ import mainapp.mimomusic.de.missionchuckhole.listener.RecordButtonListener;
 import mainapp.mimomusic.de.missionchuckhole.listener.ShowMapButtonListener;
 import mainapp.mimomusic.de.missionchuckhole.plot.DynamicLinePlot;
 import mainapp.mimomusic.de.missionchuckhole.plot.PlotColor;
+import mainapp.mimomusic.de.missionchuckhole.util.Constants;
 
 /**
  * Created by MiMo
@@ -119,33 +121,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
+        SharedPreferences prefs = getSharedPreferences(Constants.PREFS_FILE, MODE_PRIVATE);
 
-       /* Location l1 = new Location("gps");
-        Location l2 = new Location("gps");
-
-        l1.setLatitude(1);
-        l1.setLongitude(1);
-        l2.setLatitude(1);
-        l2.setLongitude(1);
-
-        AccFix fix1 = new AccFix(1,2,3,4,l1);
-        AccFix fix2 = new AccFix(1,2,3,4,l2);
-
-        List<AccFix> list = new ArrayList<>();
-        list.add(fix1);
-
-        System.out.println("contains: "+list.contains(fix2));
-*/
-
-
-
-
-        //TODO only first app start
+        if(prefs.getBoolean(Constants.FIRST_APP_VISIT, true)){
 
         Intent intent = new Intent(this, OnboardingActivity.class); // war getBaseContext()
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
 
+            // TODO uncomment this line to enable Onboarding just for the first app visit ||| prefs.edit().putBoolean(Constants.FIRST_APP_VISIT,  false);
+        }
 
 
 
