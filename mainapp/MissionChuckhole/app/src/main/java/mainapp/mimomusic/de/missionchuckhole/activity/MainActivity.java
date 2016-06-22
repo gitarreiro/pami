@@ -120,6 +120,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setSupportActionBar(toolbar);
 
 
+       /* Location l1 = new Location("gps");
+        Location l2 = new Location("gps");
+
+        l1.setLatitude(1);
+        l1.setLongitude(1);
+        l2.setLatitude(1);
+        l2.setLongitude(1);
+
+        AccFix fix1 = new AccFix(1,2,3,4,l1);
+        AccFix fix2 = new AccFix(1,2,3,4,l2);
+
+        List<AccFix> list = new ArrayList<>();
+        list.add(fix1);
+
+        System.out.println("contains: "+list.contains(fix2));
+*/
+
+
+
+
+        //TODO only first app start
+
         Intent intent = new Intent(this, OnboardingActivity.class); // war getBaseContext()
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
@@ -387,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             tileProvider.setWeightedData(points);
 
             if(overlay == null) {
-                overlay = map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+                overlay = map.addTileOverlay(new TileOverlayOptions().fadeIn(false).tileProvider(tileProvider));
             }
 
 
@@ -395,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         }
     }
-
+//TODO onBackPressed
 
     private void setUpdateMapPossible() {
         this.isUpdateMapPossible = true;
