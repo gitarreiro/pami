@@ -12,6 +12,7 @@
     <string name="default_value_mean_filter">1.0</string>
 
 
+
     <!-- String constants for Onboarding Activity -->
     <string name="onboarding_description_1">Click on the red button to start recording. App will record
     g-force and GPS data.</string>
