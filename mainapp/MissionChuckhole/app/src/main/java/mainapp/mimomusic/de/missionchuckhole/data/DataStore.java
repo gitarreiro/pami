@@ -89,6 +89,7 @@ public class DataStore {
             if (database != null && database.isOpen()) {
                 database.close();
             }
+
         }
     }
 /*
