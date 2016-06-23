@@ -58,7 +58,7 @@ public class RecordButtonListener implements View.OnClickListener {
         } else {
             //btn.setText("START RECORDING");
             //btn.setBackground(btnReleasedDrawable);
-            btn.setBackgroundDrawable(btnPressedDrawable);
+            btn.setBackgroundDrawable(btnReleasedDrawable);
             if (manager != null && listener != null && listener.getMap() != null) {
                 try {
                     manager.removeUpdates(listener);

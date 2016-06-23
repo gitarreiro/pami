@@ -266,7 +266,7 @@ public class DynamicLinePlot
 		Paint paint = new Paint();
 
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
-		paint.setColor(Color.rgb(219, 239, 255));
+		paint.setColor(Color.rgb(75, 169, 240));
 		paint.setStrokeWidth(10);
 
 		this.plot.getGraphWidget().setDomainOriginLinePaint(paint);
