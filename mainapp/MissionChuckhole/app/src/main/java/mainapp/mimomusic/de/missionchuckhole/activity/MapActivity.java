@@ -10,10 +10,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.androidplot.ui.widget.Widget;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -47,7 +49,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private ClusterManager<MyItem> mClusterManager;
     double lat, lng, intensity;
     private Location L;
-    boolean verif1,verif2;
+
 
 
     @Override
@@ -59,23 +61,23 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
 
-        final RadioButton heatMaps = (RadioButton) findViewById(R.id.radioButton1);
-        final RadioButton markers = (RadioButton) findViewById(R.id.radioButton2);
+        final CheckBox heatMaps = (CheckBox) findViewById(R.id.checkbox1);
+        final CheckBox markers = (CheckBox) findViewById(R.id.checkbox2);
 
 
         heatMaps.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (heatMaps.isChecked()) {
-                    markers.setChecked(false);
+                if (heatMaps.isChecked())
+                    /* markers.setChecked(false);
                     if (verif1)
-                    mClusterManager.clearItems();
+                    mClusterManager.clearItems(); */
 
                     dynamic_heatmap();
+                else
+                    mOverlay.remove();
 
 
-
-                }
             }
         });
 
@@ -83,13 +85,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (markers.isChecked())
-                {
-                    heatMaps.setChecked(false);
+
+                    /* heatMaps.setChecked(false);
                     if (verif2)
-                    mOverlay.remove();
+                    mOverlay.remove(); */
 
                     markers_clustering();
-                }
+
+
+                else
+                    mClusterManager.clearItems();
             }
         });
 
@@ -133,7 +138,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             double lat = myLocation.getLatitude();
             double lng = myLocation.getLongitude();
             LatLng latLng = new LatLng(lat, lng);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
 
         }
         else
@@ -150,7 +155,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private void markers_clustering() {
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        verif1 = true;
+
         mClusterManager = new ClusterManager<MyItem>(this, mMap);
 
         // Point the map's listeners at the listeners implemented by the cluster manager.
@@ -161,10 +166,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         records = DataStore.getInstance(this).getFixes();
 
-        for (AccFix record : records) {
+        for (AccFix record : records)
+        {
 
             L = record.getLocation();
-
 
             if (record.isBigChuckhole()) {
                 lat = L.getLatitude();
@@ -174,18 +179,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
             }
 
-
-
         }
-        if (mClusterManager.getMarkerCollection().getMarkers().size()==0)
-            Toast.makeText(this, "no chuckholes were detected", Toast.LENGTH_SHORT).show();
+       if (mClusterManager.getMarkerCollection().getMarkers().size() == 0)
+           Toast.makeText(this, "no chuckholes were recorded", Toast.LENGTH_SHORT).show();
     }
 
     private void dynamic_heatmap()
 
     {
 
-        verif2 = true;
+
         records = DataStore.getInstance(getApplicationContext()).getFixes();
         overlay(records);
 
@@ -203,7 +206,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
             lat = L.getLatitude();
             lng = L.getLongitude();
-            //System.out.println(record.getgForce());
+
             intensity = record.getgForce() / 5.0;
             if (intensity >= 1)
                 intensity = 1;
@@ -229,7 +232,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         Gradient gradient1 = new Gradient(Colors1, StartPoints);
 
         if (list.size() == 0)
-            Toast.makeText(this, "inexistent dataset", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No dataset is available to overlay, please do your recording", Toast.LENGTH_LONG).show();
         else
         {
             //if (mProvider1 == null)
@@ -237,7 +240,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 mProvider1 = new HeatmapTileProvider.Builder()
                         .weightedData(list)
                         .radius(10)
-                        //.gradient(gradient1)
+                        .gradient(gradient1)
                         .build();
 
                 //mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));

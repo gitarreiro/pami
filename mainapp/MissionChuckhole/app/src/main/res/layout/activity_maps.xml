@@ -27,23 +27,22 @@
         android:layout_weight="0.1"
         android:orientation="horizontal"
         android:visibility="visible">
-        <RadioButton
+        <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:text="    Heatmaps"
-            android:id="@+id/radioButton1"
+            android:id="@+id/checkbox1"
 
             android:checked="false"
             android:layout_weight="0.27" />
-        <RadioButton
+        <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:text="    Markers clustering"
-            android:id="@+id/radioButton2"
+            android:id="@+id/checkbox2"
             android:layout_weight="0.15"
-
             android:checked="false"
             />
 
