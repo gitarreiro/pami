@@ -52,6 +52,9 @@ public class ChuckLocationListener implements LocationListener {
             location.setLongitude(13.451358);
         }
         float zoomLevel = map.getCameraPosition().zoom;
+
+        System.out.println("current zoom level is "+zoomLevel);
+
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(location.getLatitude(), location.getLongitude()), zoomLevel));
 

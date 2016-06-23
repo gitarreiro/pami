@@ -20,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -29,6 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
@@ -50,12 +50,11 @@ import mainapp.mimomusic.de.missionchuckhole.listener.ShowMapButtonListener;
 import mainapp.mimomusic.de.missionchuckhole.plot.DynamicLinePlot;
 import mainapp.mimomusic.de.missionchuckhole.plot.PlotColor;
 import mainapp.mimomusic.de.missionchuckhole.util.Constants;
-import mainapp.mimomusic.de.missionchuckhole.util.Util;
 
 /**
  * Created by MiMo
  */
-public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
 
     private static final int updateInterval = 5000;
     private static final int retryInterval = 1000;
@@ -72,11 +71,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private GoogleMap map;
     private HeatmapTileProvider tileProvider;
     private TileOverlay overlay;
+    private double lastZoom;
     private boolean isRecording;
     private LocationManager manager;
     private ChuckLocationListener listener;
-    private boolean isUpdateMapPossible;
-    private TileOverlayOptions options;
+    private ImageButton btnShowMap;
+    private boolean isMapUpdatePossible;
+    private boolean isMapUpdateRunning;
     private Handler updateHandler;
     Runnable updateRunnable = new Runnable() {
         @Override
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Runnable tryUpdateRunnable = new Runnable() {
         @Override
         public void run() {
-            if (isUpdateMapPossible) {
+            if (isMapUpdatePossible) {
                 updateRunnable.run();
             } else {
                 tryUpdateHandler.postDelayed(tryUpdateRunnable, retryInterval);
@@ -118,7 +119,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.app_name);
+        if (toolbar != null) {
+            toolbar.setTitle(R.string.app_name);
+        }
         setSupportActionBar(toolbar);
 
         SharedPreferences prefs = getSharedPreferences(Constants.PREFS_FILE, MODE_PRIVATE);
@@ -129,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
 
-            prefs.edit().putBoolean(Constants.FIRST_APP_VISIT, false).commit();
+            prefs.edit().putBoolean(Constants.FIRST_APP_VISIT, false).apply();
         }
 
 
@@ -178,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setSensorDelay();
         handler.post(runnable);
         System.out.println("onResume() called");
-        if (updateRunnable != null && isUpdateMapPossible && isRecording) {
+        if (updateRunnable != null && isMapUpdatePossible && isRecording) {
             updateRunnable.run();
         }
     }
@@ -187,12 +190,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void init() {
         this.manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         this.listener = new ChuckLocationListener();
-        ImageButton btnShowMap = (ImageButton) findViewById(R.id.button_showmap);
+        btnShowMap = (ImageButton) findViewById(R.id.button_showmap);
         btnShowMap.setOnClickListener(new ShowMapButtonListener(this));
 
         ImageButton btnRecord = (ImageButton) findViewById(R.id.button_record);
-        btnRecord.setOnClickListener(new RecordButtonListener(this, btnRecord, manager, listener));
-
+        if (btnRecord != null) {
+            btnRecord.setOnClickListener(new RecordButtonListener(this, btnRecord, manager, listener));
+        }
         this.ivCycling = (ImageView) findViewById(R.id.iv_cycling);
 
         //Button btnSettings = (Button) findViewById(R.id.button_settings);
@@ -317,19 +321,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    /**
-     * Remove a plot from the graph.
-     *
-     * @param key a
-     */
-    private void removeGraphPlot(int key) {
-        dynamicPlot.removeSeriesPlot(key);
-    }
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
+        map.setOnCameraChangeListener(this);
 
         String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION};
@@ -362,7 +358,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             location.setLongitude(13.451358);
         }
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(location.getLatitude(), location.getLongitude()), 14));
+                new LatLng(location.getLatitude(), location.getLongitude()), 14)); //TODO
 
 
         drawHeatmap();
@@ -371,13 +367,49 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setUpdateMapPossible();
     }
 
+
+
+
+    @Override
+    public void onCameraChange(CameraPosition position) {
+        float maxZoom = 14.0f;
+        float minZoom = 10.0f;
+
+
+        System.out.println("current zoom: " + position.zoom);
+        boolean changedZoom = false;
+        if (position.zoom > maxZoom) {
+            map.animateCamera(CameraUpdateFactory.zoomTo(maxZoom));
+            changedZoom = true;
+        } else if (position.zoom < minZoom) {
+            map.animateCamera(CameraUpdateFactory.zoomTo(minZoom));
+            changedZoom = true;
+        }
+        if(changedZoom||lastZoom != position.zoom) {
+            lastZoom = position.zoom;
+            drawHeatmap();
+        }
+        lastZoom = position.zoom;
+    }
+
     private void drawHeatmap() {
-        List<AccFix> fixes = DataStore.getInstance(this).getFixes();
-
+        //List<AccFix> fixes = DataStore.getInstance(this).getFixes();
+        List<AccFix> fixes = DataStore.getInstance(this).getFixes(lastZoom);
         List<WeightedLatLng> points = new ArrayList<>();
-        List<LatLng> unweightedPoints = new ArrayList<>();
 
-        int counter = 0;
+
+
+
+        Location home = new Location("dummy"); //TODO replace by a point far away
+        home.setLatitude(48.561960);
+        home.setLongitude(13.578143);
+
+        AccFix homeFix = new AccFix(1, 2, 3, 6, home);
+        if(!fixes.contains(homeFix))
+            fixes.add(homeFix);
+
+
+
 
         for (AccFix fix : fixes) {
             //create WeightedLatLng and add it to list
@@ -385,10 +417,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (fixLocation != null) {
                 double latitude = fixLocation.getLatitude();
                 double longitude = fixLocation.getLongitude();
-                double intensity = fix.getgForce() / 6.0;
+
+                double factor = 6.0;
+
+
+                //factor = factor*(1+2/zoomLevel);
+
+
+/*
+                if(zoomLevel>=14) {
+
+                }else if(zoomLevel>=13){
+
+                }else if(zoomLevel>=12) {
+
+                }else if (zoomLevel>=11) {
+
+                }else if (zoomLevel>=10){
+
+                }
+*/
+
+                double intensity = fix.getgForce() / factor;
+                //System.out.println("intensity: "+intensity);
                 WeightedLatLng wll = new WeightedLatLng(new LatLng(latitude, longitude), intensity);
                 points.add(wll);
-                System.out.println("intensity is "+intensity);
             }
         }
 
@@ -396,38 +449,40 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (points.size() > 0) {
             if (tileProvider == null) {
                 tileProvider = new HeatmapTileProvider.Builder().weightedData(points).build();
-                tileProvider.setRadius(10);
-                //tileProvider.setGradient(Util.getMapGradient());
-                //tileProvider = new HeatmapTileProvider.Builder().data(unweightedPoints).build();
+                tileProvider.setRadius(15);
             }
 
             tileProvider.setWeightedData(points);
-            //tileProvider.setData(unweightedPoints);
 
             if (overlay == null) {
                 overlay = map.addTileOverlay(new TileOverlayOptions().fadeIn(false).tileProvider(tileProvider));
             }
 
-
             overlay.clearTileCache();
-
         }
     }
 
     @Override
     public void onBackPressed() {
-        //TODO onBackPressed
+        if (isMapUpdateRunning) {
+            stopUpdatingMap(false);
+        }
 
         super.onBackPressed();
     }
 
 
     private void setUpdateMapPossible() {
-        this.isUpdateMapPossible = true;
+        this.isMapUpdatePossible = true;
         updateHandler = new Handler();
     }
 
     public void startUpdatingMap(boolean fromButtonClick) {
+
+        btnShowMap.setClickable(false);
+
+        isMapUpdateRunning = true;
+
         tryUpdateRunnable.run();
         this.isRecording = true;
         this.ivCycling.setVisibility(View.VISIBLE);
@@ -438,6 +493,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void stopUpdatingMap(boolean fromOnPause) {
+
+        btnShowMap.setClickable(true);
+        isMapUpdateRunning = false;
         updateHandler.removeCallbacks(updateRunnable);
         this.isRecording = false;
         this.ivCycling.setVisibility(View.GONE);

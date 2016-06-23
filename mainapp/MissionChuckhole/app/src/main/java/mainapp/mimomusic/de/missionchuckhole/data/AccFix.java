@@ -21,9 +21,16 @@ public class AccFix implements Comparable {
         this.location = location;
     }
 
+
+    public AccFix(AccFix toCopy) {
+        this.x=toCopy.x;
+        this.y=toCopy.y;
+        this.z=toCopy.z;
+        this.gForce = toCopy.gForce;
+        this.location=toCopy.location;
+    }
+
     public static AccFix fromString(String saveString) {
-        System.out.println("creating AccFix from: ");
-        System.out.println(saveString);
         String[] splitted = saveString.split(";");
         double x = Double.parseDouble(splitted[0]);
         double y = Double.parseDouble(splitted[1]);
@@ -39,7 +46,6 @@ public class AccFix implements Comparable {
             location.setLongitude(longitude);
 
         }
-        System.out.println("created AccFix: " + location);
         return new AccFix(x, y, z, gForce, location);
     }
 
