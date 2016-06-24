@@ -12,16 +12,12 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
-import com.androidplot.ui.widget.Widget;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
@@ -47,8 +43,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private TileOverlay mOverlay;
     private List<AccFix> records = new ArrayList<>();
     private ClusterManager<MyItem> mClusterManager;
-    double lat, lng, intensity;
-    private Location L;
+    private int i;
 
 
 
@@ -69,9 +64,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (heatMaps.isChecked())
-                    /* markers.setChecked(false);
-                    if (verif1)
-                    mClusterManager.clearItems(); */
 
                     dynamic_heatmap();
                 else
@@ -86,17 +78,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (markers.isChecked())
 
-                    /* heatMaps.setChecked(false);
-                    if (verif2)
-                    mOverlay.remove(); */
-
                     markers_clustering();
 
 
                 else
-                    mClusterManager.clearItems();
-            }
-        });
+                {
+                    if (i != 0) {
+                        mClusterManager.clearItems();
+                        mClusterManager.cluster();}
+
+                }
+        }});
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -121,6 +113,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
+
+        LatLng Location;
+        double lat, lng;
+
+
+
+
+
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
@@ -135,10 +135,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             Criteria criteria = new Criteria();
             String provider = locationManager.getBestProvider(criteria, true);
             Location myLocation = locationManager.getLastKnownLocation(provider);
-            double lat = myLocation.getLatitude();
-            double lng = myLocation.getLongitude();
-            LatLng latLng = new LatLng(lat, lng);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+            lat = myLocation.getLatitude();
+            lng = myLocation.getLongitude();
+            Location = new LatLng(lat, lng);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Location, 14));
 
 
         }
@@ -156,59 +156,60 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private void markers_clustering() {
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-
+        i=0;
+        double lat, lng;
+        Location L;
         mClusterManager = new ClusterManager<MyItem>(this, mMap);
 
         // Point the map's listeners at the listeners implemented by the cluster manager.
         mMap.setOnCameraChangeListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
+        //mMap.setOnMarkerClickListener(mClusterManager);
+
 
         // Add cluster items (markers) to the cluster manager.
 
         records = DataStore.getInstance(this).getFixes();
-
         for (AccFix record : records)
         {
 
             L = record.getLocation();
 
-            if (record.isBigChuckhole()) {
+            if (record.isBigChuckhole())
+            {
                 lat = L.getLatitude();
                 lng = L.getLongitude();
                 MyItem offsetItem = new MyItem(lat, lng);
                 mClusterManager.addItem(offsetItem);
-
+                mClusterManager.cluster();
+                i++;
             }
 
+
+
         }
-       if (mClusterManager.getMarkerCollection().getMarkers().size() == 0)
-           Toast.makeText(this, "no chuckholes were recorded", Toast.LENGTH_SHORT).show();
+
+        //if (i==0)
+            //Toast.makeText(getApplicationContext(), "No chuckholes were found", Toast.LENGTH_SHORT).show();
     }
 
     private void dynamic_heatmap()
 
     {
-
-
         records = DataStore.getInstance(getApplicationContext()).getFixes();
-        overlay(records);
 
-    }
 
-    private void overlay(List<AccFix> r)
-
-    {
-
+        double lat, lng, intensity;
         List<WeightedLatLng> list = new ArrayList<>();
 
 
-        for (AccFix record : r) {
+        for (AccFix record : records) {
             Location L = record.getLocation();
 
             lat = L.getLatitude();
             lng = L.getLongitude();
 
-            intensity = record.getgForce() / 5.0;
+            intensity = record.getgForce() / 6.0;
+            System.out.println(record.getgForce());
             if (intensity >= 1)
                 intensity = 1;
 
@@ -219,9 +220,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         int[] Colors1 =
                 {
-                        //Color.rgb(102, 225, 0) // green
                         Color.rgb(0, 255, 0),  //light green
-                        //Color.rgb(255, 255, 0), // yellow
                         Color.rgb(255, 0, 0)  // red
                 };
 
@@ -234,115 +233,25 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         if (list.size() == 0)
             Toast.makeText(this, "No dataset is available to overlay, please do your recording", Toast.LENGTH_LONG).show();
-        else
-        {
+        else {
             //if (mProvider1 == null)
             //{
-                mProvider1 = new HeatmapTileProvider.Builder()
-                        .weightedData(list)
-                        .radius(10)
-                        .gradient(gradient1)
-                        .build();
+            mProvider1 = new HeatmapTileProvider.Builder()
+                    .weightedData(list)
+                    .radius(10)
+                    .gradient(gradient1)
+                    .build();
 
-                //mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
+            //mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
 
 
             //mProvider1.setWeightedData(list);
             //mOverlay.clearTileCache();
 
             //if (mOverlay == null) {
-                mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
-           // }
-
-        }
-    }
-/*
-    private void static_heatmap ()
-    {
-
-
-        List<LatLng> list1 = new ArrayList<>();
-        List<LatLng> list2 = new ArrayList<>();
-        List<LatLng> list3 = new ArrayList<>();
-
-        List<AccFix> records = DataStore.getInstance(this).getFixes();
-
-        for (AccFix record : records)
-        {
-            Location L = record.getLocation();
-
-            double lat = L.getLatitude();
-            double lng = L.getLongitude();
-            double intensity = record.getgForce() / 6.0;
-
-            LatLng detection = new LatLng(lat, lng);
-
-            if (intensity <=1 && intensity >=0.8)
-            list3.add(detection);
-            else if (intensity>=0.4 && intensity <0.8)
-                list2.add(detection);
-            else
-                list1.add(detection);
-        }
-
-        int[] Colors1 = {
-
-                Color.rgb(0, 255, 0),  //light green
-
-        };
-
-        int[] Colors2 = {
-                Color.rgb(255, 255, 0) // yellow
-        };
-
-        int[] Colors3 = {
-                Color.rgb(255, 0, 0)  // red
-        };
-
-        float[] StartPoints = {
-                1f
-
-        };
-
-        Gradient gradient1 = new Gradient(Colors1, StartPoints);
-        Gradient gradient2 = new Gradient(Colors2, StartPoints);
-        Gradient gradient3 = new Gradient(Colors3, StartPoints);
-
-
-        if (list1.size()==0 || list2.size()==0 || list3.size()==0)
-            Toast.makeText(this, "inexistent dataset", Toast.LENGTH_SHORT).show();
-        else
-        {
-            mProvider1 = new HeatmapTileProvider.Builder()
-                    .data(list1)
-                    .radius(10)
-                    .gradient(gradient1)
-                    .build();
-
-
-            mProvider2 = new HeatmapTileProvider.Builder()
-                    .data(list2)
-                    .radius(10)
-                    .gradient(gradient2)
-                    .build();
-
-            mProvider3 = new HeatmapTileProvider.Builder()
-                    .data(list3)
-                    .radius(10)
-                    .gradient(gradient3)
-                    .build();
-
-
             mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
-            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider2));
-            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider3));
-
         }
-
     }
 
-
-
-   */
 
 }
