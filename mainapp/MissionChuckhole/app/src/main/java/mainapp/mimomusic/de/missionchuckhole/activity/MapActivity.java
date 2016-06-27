@@ -14,10 +14,12 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
@@ -36,7 +38,7 @@ import mainapp.mimomusic.de.missionchuckhole.data.DataStore;
 import mainapp.mimomusic.de.missionchuckhole.data.MyItem;
 
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
 
     private GoogleMap mMap;
     private HeatmapTileProvider mProvider1;
@@ -44,7 +46,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private List<AccFix> records = new ArrayList<>();
     private ClusterManager<MyItem> mClusterManager;
     private int i;
+    double lastzoom;
+    private CheckBox heatMaps, markers;
+    // The minimum distance to change Updates in meters
+    private static final double MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 
+    // The minimum time between updates in milliseconds
+    private static final double MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+
+
+    //,GoogleMap.OnCameraChangeListener
 
 
     @Override
@@ -53,11 +64,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
 
-        final CheckBox heatMaps = (CheckBox) findViewById(R.id.checkbox1);
-        final CheckBox markers = (CheckBox) findViewById(R.id.checkbox2);
+        heatMaps = (CheckBox) findViewById(R.id.checkbox1);
+        markers = (CheckBox) findViewById(R.id.checkbox2);
 
 
         heatMaps.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -67,6 +77,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
                     dynamic_heatmap();
                 else
+                    if (mOverlay!=null)
                     mOverlay.remove();
 
 
@@ -77,15 +88,24 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (markers.isChecked())
+                {
+                        markers_clustering();
 
-                    markers_clustering();
+                    /*
+                    else
+                    {
+                        System.out.println("no clustering");
+                        Toast.makeText(MapActivity.this,"no chuckholes were detected",Toast.LENGTH_SHORT).show();
 
+                    }*/
+                }
 
                 else
                 {
                     if (i != 0) {
                         mClusterManager.clearItems();
-                        mClusterManager.cluster();}
+                        mClusterManager.cluster();
+                    }
 
                 }
         }});
@@ -112,18 +132,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     public void onMapReady(GoogleMap googleMap) {
 
-        mMap = googleMap;
-
         LatLng Location;
         double lat, lng;
 
 
-
-
-
+        mMap = googleMap;
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
+
+        mMap.setOnCameraChangeListener(this);
+
+
+
         //mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
 
@@ -131,15 +152,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
 
+
             LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
             String provider = locationManager.getBestProvider(criteria, true);
             Location myLocation = locationManager.getLastKnownLocation(provider);
+
             lat = myLocation.getLatitude();
             lng = myLocation.getLongitude();
             Location = new LatLng(lat, lng);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Location, 14));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Location, 12));
 
+
+
+           //Location = new LatLng(48.719649, 13.384636);
+           //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Location, 12));
 
         }
         else
@@ -152,6 +180,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
 
     }
+
+
 
     private void markers_clustering() {
         // Initialize the manager with the context and the map.
@@ -167,8 +197,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
 
         // Add cluster items (markers) to the cluster manager.
-
-        records = DataStore.getInstance(this).getFixes();
+        records = DataStore.getInstance(this).getFixes(lastzoom);
+        //records = DataStore.getInstance(this).getFixes();
         for (AccFix record : records)
         {
 
@@ -184,25 +214,47 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 i++;
             }
 
+        }
+        //System.out.println("Number or markers of clustering  "+i);
+        if (i==0)
+            Toast.makeText(this, "No chuckholes were found", Toast.LENGTH_SHORT).show();
+        mMap.setOnCameraChangeListener(this);
+    }
 
+    public void onCameraChange(CameraPosition position) {
+
+        float maxZoom = 14;
+        float minZoom = 10;
+
+        if (heatMaps.isChecked())
+            heatMaps.setChecked(false);
+
+        if (position.zoom > maxZoom) {
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(maxZoom));
+
+        }
+        if (position.zoom < minZoom) {
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(minZoom));
 
         }
 
-        //if (i==0)
-            //Toast.makeText(getApplicationContext(), "No chuckholes were found", Toast.LENGTH_SHORT).show();
+
+        lastzoom = position.zoom;
+
     }
+
 
     private void dynamic_heatmap()
 
     {
-        records = DataStore.getInstance(getApplicationContext()).getFixes();
-
-
         double lat, lng, intensity;
         List<WeightedLatLng> list = new ArrayList<>();
+        System.out.println("lastzoom in dynamic heatmap  " + lastzoom);
+        records = DataStore.getInstance(this).getFixes(lastzoom);
+        if (records.size()>0)
+        {
 
-
-        for (AccFix record : records) {
+          for (AccFix record : records) {
             Location L = record.getLocation();
 
             lat = L.getLatitude();
@@ -210,33 +262,28 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
             intensity = record.getgForce() / 6.0;
             System.out.println(record.getgForce());
-            if (intensity >= 1)
+            if (intensity > 1)
                 intensity = 1;
 
             WeightedLatLng detection = new WeightedLatLng(new LatLng(lat, lng), intensity);
 
             list.add(detection);
-        }
+          }
 
-        int[] Colors1 =
+          int[] Colors1 =
                 {
                         Color.rgb(0, 255, 0),  //light green
                         Color.rgb(255, 0, 0)  // red
                 };
 
-        float[] StartPoints =
+          float[] StartPoints =
                 {
                         0.2f, 1f
                 };
 
-        Gradient gradient1 = new Gradient(Colors1, StartPoints);
+          Gradient gradient1 = new Gradient(Colors1, StartPoints);
 
-        if (list.size() == 0)
-            Toast.makeText(this, "No dataset is available to overlay, please do your recording", Toast.LENGTH_LONG).show();
-        else {
-            //if (mProvider1 == null)
-            //{
-            mProvider1 = new HeatmapTileProvider.Builder()
+          mProvider1 = new HeatmapTileProvider.Builder()
                     .weightedData(list)
                     .radius(10)
                     .gradient(gradient1)
@@ -249,9 +296,109 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             //mOverlay.clearTileCache();
 
             //if (mOverlay == null) {
-            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
+          mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
         }
+        else
+            Toast.makeText(MapActivity.this, "No dataset is available to overlay, please do your recording", Toast.LENGTH_LONG).show();
     }
+
+
+/*
+    mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener(){
+            public void onCameraChange(CameraPosition position) {
+
+                float maxZoom = 14;
+                float minZoom = 10;
+
+
+                if (heatMaps.isChecked())
+                    heatMaps.setChecked(false);
+
+                if (position.zoom > maxZoom) {
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(maxZoom));
+
+                }
+                if (position.zoom < minZoom) {
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(minZoom));
+
+                }
+
+
+
+                lastzoom = position.zoom;
+
+
+            }
+
+        });
+
+ -----------------------------------------------------
+        ------------------------------------------------
+
+
+
+    private Location getLocation()
+    {
+        boolean isGPSEnabled, isNetworkEnabled;
+        double lat, lng;
+        Location location;
+        try {
+
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            //locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+            // getting GPS status
+            isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            // getting network status
+            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (isGPSEnabled && isNetworkEnabled)
+
+            {
+                //canGetLocation = true;
+                if (isNetworkEnabled) {
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+
+                    if (locationManager != null) {
+                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        if (location != null) {
+                            lat = location.getLatitude();
+                            lng = location.getLongitude();
+                        }
+                    }
+                }
+                // if GPS Enabled get lat/long using GPS Services
+                if (isGPSEnabled) {
+                    if (location == null) {
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+
+                        if (locationManager != null) {
+                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            if (location != null) {
+                                lat = location.getLatitude();
+                                lng = location.getLongitude();
+                            }
+                        }
+                    }
+                }
+            } else {
+                String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION};
+                ActivityCompat.requestPermissions(this, permissions, 0);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return location;
+    }
+
+
+*/
+
 
 
 }
