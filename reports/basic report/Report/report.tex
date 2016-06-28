@@ -1,0 +1,39 @@
+% article example for classicthesis.sty
+\documentclass[10pt,a4paper]{article} % KOMA-Script article scrartcl
+\usepackage{lipsum}
+\usepackage{url}
+\usepackage[nochapters]{../classicthesis} % nochapters
+
+\begin{document}
+    \pagestyle{plain}
+    \title{\rmfamily\normalfont\spacedallcaps{Mission: Chuckhole}}
+    \author{\spacedlowsmallcaps{Marwan ElMezni, Michael Moosbauer}}
+    \date{} % no date
+    
+    \maketitle
+    
+%    \begin{abstract}
+        %Maybe we won't need an abstract
+ %   \end{abstract}
+       
+    \tableofcontents
+    
+    \section{Problem Description}
+    
+    \section{Recommended Setup}
+	%photo of bike, smartphone fix, ...    
+
+    \section{Architecture}
+	% maybe UML class diagram, if suitable
+    
+    \section{App Features}
+	% pictures etc. here
+    
+    
+    % bib stuff
+    \nocite{*}
+    \addtocontents{toc}{\protect\vspace{\beforebibskip}}
+    \addcontentsline{toc}{section}{\refname}    
+    \bibliographystyle{plain}
+    \bibliography{../Bibliography}
+\end{document}
