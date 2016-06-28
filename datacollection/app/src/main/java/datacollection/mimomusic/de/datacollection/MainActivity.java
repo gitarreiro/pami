@@ -18,7 +18,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -90,18 +89,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                     File file = new File(dir, filename);
 
-                    try{
+                    try {
                         FileOutputStream f = new FileOutputStream(file);
                         PrintWriter pw = new PrintWriter(f);
-                        for(AccFix fix : results) {
+                        for (AccFix fix : results) {
                             pw.println(fix.toString());
                         }
                         pw.flush();
                         pw.close();
                         f.close();
                         results.clear();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
