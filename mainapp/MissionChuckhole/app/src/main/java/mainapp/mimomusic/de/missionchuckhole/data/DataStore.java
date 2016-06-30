@@ -108,30 +108,34 @@ public class DataStore {
 */
     public List<AccFix> getFixes() {
         List<AccFix> tmp = new ArrayList<>();
+
+        /*
         Location home = new Location("dummy");
+
         home.setLatitude(48.561960);
         home.setLongitude(13.578143);
 
         List<AccFix> copy = new ArrayList<>();
+        */
 
 
         for (AccFix fix : fixes) {
-            copy.add(new AccFix(fix));
+            //copy.add(new AccFix(fix));
 /*
             for (AccFix snd:fixes) {
                 if (!fix.equals(snd)) {
                     distances.add(fix.getLocation().distanceTo(snd.getLocation()));
                 }
             }
-*/
+
 
             if (fix.getLocation().distanceTo(home) < 50) {
                 continue;
-            }
+            } */
 
             tmp.add(fix);
         }
-        tmp.add(new AccFix(1, 2, 3, 6, home));
+        //tmp.add(new AccFix(1, 2, 3, 6, home));
 
 
 

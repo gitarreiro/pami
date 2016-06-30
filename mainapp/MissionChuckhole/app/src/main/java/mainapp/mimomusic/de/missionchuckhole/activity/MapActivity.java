@@ -10,9 +10,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.Toast;
+import android.widget.ZoomControls;
 
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -44,10 +47,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private HeatmapTileProvider mProvider1;
     private TileOverlay mOverlay;
     private List<AccFix> records = new ArrayList<>();
+    //private List<AccFix> records2 = new ArrayList<>();
     private ClusterManager<MyItem> mClusterManager;
     private int i;
-    double lastzoom;
+    private double lastZoom;
+    boolean test;
     private CheckBox heatMaps, markers;
+    private CameraPosition p;
     // The minimum distance to change Updates in meters
     private static final double MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 
@@ -55,7 +61,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private static final double MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
 
 
-    //,GoogleMap.OnCameraChangeListener
+    //GoogleMap.OnCameraChangeListener
 
 
     @Override
@@ -66,49 +72,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setContentView(R.layout.activity_maps);
 
 
-        heatMaps = (CheckBox) findViewById(R.id.checkbox1);
-        markers = (CheckBox) findViewById(R.id.checkbox2);
-
-
-        heatMaps.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (heatMaps.isChecked())
-
-                    dynamic_heatmap();
-                else
-                    if (mOverlay!=null)
-                    mOverlay.remove();
-
-
-            }
-        });
-
-        markers.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (markers.isChecked())
-                {
-                        markers_clustering();
-
-                    /*
-                    else
-                    {
-                        System.out.println("no clustering");
-                        Toast.makeText(MapActivity.this,"no chuckholes were detected",Toast.LENGTH_SHORT).show();
-
-                    }*/
-                }
-
-                else
-                {
-                    if (i != 0) {
-                        mClusterManager.clearItems();
-                        mClusterManager.cluster();
-                    }
-
-                }
-        }});
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -136,13 +99,50 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         double lat, lng;
 
 
+
         mMap = googleMap;
+        mMap.setPadding(0,0,0,55);
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
 
-        mMap.setOnCameraChangeListener(this);
+        heatMaps = (CheckBox) findViewById(R.id.checkbox1);
+        markers = (CheckBox) findViewById(R.id.checkbox2);
 
+
+
+        heatMaps.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (heatMaps.isChecked())
+                    dynamic_heatmap();
+
+                else
+                if (mOverlay!=null)
+                    mOverlay.remove();
+
+
+            }
+        });
+
+        markers.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (markers.isChecked())
+                {
+                    markers_clustering();
+
+                }
+
+                else
+                {
+                    if (i != 0) {
+                        mClusterManager.clearItems();
+                        mClusterManager.cluster();
+                    }
+
+                }
+            }});
 
 
         //mMap.getUiSettings().setMyLocationButtonEnabled(true);
@@ -152,22 +152,28 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
 
-
+/*
             LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
             String provider = locationManager.getBestProvider(criteria, true);
             Location myLocation = locationManager.getLastKnownLocation(provider);
 
+            if (myLocation !=null)
+            {
             lat = myLocation.getLatitude();
             lng = myLocation.getLongitude();
             Location = new LatLng(lat, lng);
+            }
+
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Location, 12));
 
+*/
 
-
-           //Location = new LatLng(48.719649, 13.384636);
-           //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Location, 12));
+           Location = new LatLng(48.719649, 13.384636);
+           mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Location, 13));
+           heatMaps.setChecked(true);
+           //mMap.setOnCameraChangeListener(this);
 
         }
         else
@@ -183,12 +189,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
 
 
+
     private void markers_clustering() {
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
         i=0;
         double lat, lng;
         Location L;
+
+
         mClusterManager = new ClusterManager<MyItem>(this, mMap);
 
         // Point the map's listeners at the listeners implemented by the cluster manager.
@@ -197,8 +206,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
 
         // Add cluster items (markers) to the cluster manager.
-        records = DataStore.getInstance(this).getFixes(lastzoom);
-        //records = DataStore.getInstance(this).getFixes();
+        records = DataStore.getInstance(this).getFixes();
+
         for (AccFix record : records)
         {
 
@@ -218,28 +227,40 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         //System.out.println("Number or markers of clustering  "+i);
         if (i==0)
             Toast.makeText(this, "No chuckholes were found", Toast.LENGTH_SHORT).show();
-        mMap.setOnCameraChangeListener(this);
     }
 
     public void onCameraChange(CameraPosition position) {
 
-        float maxZoom = 14;
-        float minZoom = 10;
 
-        if (heatMaps.isChecked())
+
+        /*if (heatMaps.isChecked())
             heatMaps.setChecked(false);
 
-        if (position.zoom > maxZoom) {
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(maxZoom));
+        if (position.zoom >= minZoom && position.zoom <= maxZoom) {
+
+            if (mOverlay!=null)
+                mOverlay.remove();
+            lastzoom = position.zoom;
+            dynamic_heatmap();
 
         }
-        if (position.zoom < minZoom) {
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(minZoom));
-
-        }
-
-
+    else if (position.zoom < minZoom) {
+        //mMap.animateCamera(CameraUpdateFactory.zoomTo(minZoom));
+        if (mOverlay!=null)
+            mOverlay.remove();
         lastzoom = position.zoom;
+        dynamic_heatmap();
+
+    }
+    else
+    {
+    }*/
+
+        lastZoom = position.zoom;
+        if (heatMaps.isChecked())
+            dynamic_heatmap();
+
+
 
     }
 
@@ -248,61 +269,91 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     {
         double lat, lng, intensity;
-        List<WeightedLatLng> list = new ArrayList<>();
-        System.out.println("lastzoom in dynamic heatmap  " + lastzoom);
-        records = DataStore.getInstance(this).getFixes(lastzoom);
-        if (records.size()>0)
+        float maxZoom = 14;
+        float minZoom = 10;
+
+
+        System.out.println("last zoom before overlay" + lastZoom);
+        if (lastZoom <= maxZoom && lastZoom >= minZoom)
         {
+            if (mOverlay != null)
+            mOverlay.remove();
+            test = true;
+            records = DataStore.getInstance(this).getFixes(lastZoom);
 
-          for (AccFix record : records) {
-            Location L = record.getLocation();
-
-            lat = L.getLatitude();
-            lng = L.getLongitude();
-
-            intensity = record.getgForce() / 6.0;
-            System.out.println(record.getgForce());
-            if (intensity > 1)
-                intensity = 1;
-
-            WeightedLatLng detection = new WeightedLatLng(new LatLng(lat, lng), intensity);
-
-            list.add(detection);
-          }
-
-          int[] Colors1 =
-                {
-                        Color.rgb(0, 255, 0),  //light green
-                        Color.rgb(255, 0, 0)  // red
-                };
-
-          float[] StartPoints =
-                {
-                        0.2f, 1f
-                };
-
-          Gradient gradient1 = new Gradient(Colors1, StartPoints);
-
-          mProvider1 = new HeatmapTileProvider.Builder()
-                    .weightedData(list)
-                    .radius(10)
-                    .gradient(gradient1)
-                    .build();
-
-            //mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
-
-
-            //mProvider1.setWeightedData(list);
-            //mOverlay.clearTileCache();
-
-            //if (mOverlay == null) {
-          mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
+            System.out.println("size of dataset with filtering" + records.size());
         }
-        else
-            Toast.makeText(MapActivity.this, "No dataset is available to overlay, please do your recording", Toast.LENGTH_LONG).show();
+
+        if (lastZoom > maxZoom || lastZoom < minZoom) {
+
+            if (test)
+                if (mOverlay != null)
+                    mOverlay.remove();
+
+            records = DataStore.getInstance(this).getFixes();
+            System.out.println("size of dataset without filtering" + records.size());
+            test = true;
+
+
+        }
+                List<WeightedLatLng> list = new ArrayList<>();
+                WeightedLatLng point;
+
+
+                for (AccFix record : records)
+                {
+                    Location L = record.getLocation();
+
+                    lat = L.getLatitude();
+                    lng = L.getLongitude();
+
+                    intensity = record.getgForce() / 6.0;
+                    //System.out.println(intensity);
+                    if (intensity > 1)
+                        intensity = 1;
+
+                    point = new WeightedLatLng(new LatLng(lat, lng), intensity);
+
+                    list.add(point);
+                }
+                if (list.size() > 0)
+                {
+
+                    int[] Colors1 =
+                            {
+                                    Color.rgb(0, 255, 0),  //light green
+                                    Color.rgb(255, 0, 0)  // red
+                            };
+
+                    float[] StartPoints =
+                            {
+                                    0.2f, 1f
+                            };
+
+                    Gradient gradient1 = new Gradient(Colors1, StartPoints);
+
+                    mProvider1 = new HeatmapTileProvider.Builder()
+                            .weightedData(list)
+                            .radius(10)
+                            .gradient(gradient1)
+                            .build();
+
+                    //mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
+
+
+                    //mProvider1.setWeightedData(list);
+                    //mOverlay.clearTileCache();
+
+                    //if (mOverlay == null) {
+                    mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
+                }
+
+                else
+                   Toast.makeText(MapActivity.this, "No dataset is available to overlay, please do your recording", Toast.LENGTH_LONG).show();
+
+
+
     }
-
-
 /*
     mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener(){
             public void onCameraChange(CameraPosition position) {
@@ -398,6 +449,23 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
 
 */
+/*
+
+/*
+
+if (lastZoom < minZoom)
+            {
+                if (mOverlay != null)
+                    mOverlay.remove();
+
+                if (heatMaps.isChecked())
+                {
+                    heatMaps.setChecked(false);
+                    Toast.makeText(MapActivity.this, "this zoom level is not suitable, please zoom in", Toast.LENGTH_SHORT);
+                    System.out.println("this zoom level is not suitable, please zoom in");
+                  }
+
+ */
 
 
 
