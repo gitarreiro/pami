@@ -53,12 +53,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private double lastZoom;
     boolean test;
     private CheckBox heatMaps, markers;
-    private CameraPosition p;
-    // The minimum distance to change Updates in meters
-    private static final double MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 
-    // The minimum time between updates in milliseconds
-    private static final double MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
 
 
     //GoogleMap.OnCameraChangeListener
@@ -152,7 +147,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
 
-/*
+
             LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
@@ -165,12 +160,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             lng = myLocation.getLongitude();
             Location = new LatLng(lat, lng);
             }
+            else
+                Location = new LatLng(48.571947, 13.449502);
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Location, 12));
 
-*/
 
-           Location = new LatLng(48.719649, 13.384636);
+
+
+
            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Location, 13));
            heatMaps.setChecked(true);
            //mMap.setOnCameraChangeListener(this);
@@ -286,13 +283,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
         if (lastZoom > maxZoom || lastZoom < minZoom) {
 
-            if (test)
+            if (test) {
                 if (mOverlay != null)
                     mOverlay.remove();
-
+                test = false ;
+            }
             records = DataStore.getInstance(this).getFixes();
             System.out.println("size of dataset without filtering" + records.size());
-            test = true;
+
 
 
         }
