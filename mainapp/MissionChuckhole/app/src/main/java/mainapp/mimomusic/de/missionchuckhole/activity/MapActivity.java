@@ -1,11 +1,14 @@
 package mainapp.mimomusic.de.missionchuckhole.activity;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -97,9 +100,27 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
         mMap = googleMap;
         mMap.setPadding(0,0,0,55);
-        mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
+
+
+        try
+        {
+            mMap.setMyLocationEnabled(true);
+
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+
+        //mMap.getUiSettings().setZoomControlsEnabled(true);
+
+
+
+        //mMap.getUiSettings().setCompassEnabled(true);
+
+        //mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+
 
         heatMaps = (CheckBox) findViewById(R.id.checkbox1);
         markers = (CheckBox) findViewById(R.id.checkbox2);
@@ -140,19 +161,53 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             }});
 
 
-        //mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
 
 
-            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+            String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION};
+            ActivityCompat.requestPermissions(this, permissions, 0);
+
+
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            // If GPS is not enabled, take user to screen to enable it
+            boolean enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (!enabled) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            criteria.setPowerRequirement(Criteria.POWER_LOW);
+
+            Location myLocation = null;
+            try
+            {
+
             String provider = locationManager.getBestProvider(criteria, true);
-            Location myLocation = locationManager.getLastKnownLocation(provider);
+            if (provider != null)
+                myLocation = locationManager.getLastKnownLocation(provider);
+
+
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+            // Get last known location
+            //Location myLocation = locationManager.getLastKnownLocation(provider);
+
+            //LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            //Criteria criteria = new Criteria();
+            //criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            //String provider = locationManager.getBestProvider(criteria, true);
+            //Location myLocation = locationManager.getLastKnownLocation(provider);
 
             if (myLocation !=null)
             {
@@ -172,14 +227,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
            heatMaps.setChecked(true);
            //mMap.setOnCameraChangeListener(this);
 
-        }
-        else
-        {
-            // request permission
-            String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION};
-            ActivityCompat.requestPermissions(this, permissions, 0);
-        }
+
 
 
     }
@@ -229,30 +277,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     public void onCameraChange(CameraPosition position) {
 
 
-
-        /*if (heatMaps.isChecked())
-            heatMaps.setChecked(false);
-
-        if (position.zoom >= minZoom && position.zoom <= maxZoom) {
-
-            if (mOverlay!=null)
-                mOverlay.remove();
-            lastzoom = position.zoom;
-            dynamic_heatmap();
-
-        }
-    else if (position.zoom < minZoom) {
-        //mMap.animateCamera(CameraUpdateFactory.zoomTo(minZoom));
-        if (mOverlay!=null)
-            mOverlay.remove();
-        lastzoom = position.zoom;
-        dynamic_heatmap();
-
-    }
-    else
-    {
-    }*/
-
         lastZoom = position.zoom;
         if (heatMaps.isChecked())
             dynamic_heatmap();
@@ -266,34 +290,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     {
         double lat, lng, intensity;
-        float maxZoom = 14;
-        float minZoom = 10;
-
 
         System.out.println("last zoom before overlay" + lastZoom);
-        if (lastZoom <= maxZoom && lastZoom >= minZoom)
-        {
-            if (mOverlay != null)
-            mOverlay.remove();
-            test = true;
-            records = DataStore.getInstance(this).getFixes(lastZoom);
 
-            System.out.println("size of dataset with filtering" + records.size());
-        }
+        records = DataStore.getInstance(this).getFixes(lastZoom);
 
-        if (lastZoom > maxZoom || lastZoom < minZoom) {
-
-            if (test) {
-                if (mOverlay != null)
-                    mOverlay.remove();
-                test = false ;
-            }
-            records = DataStore.getInstance(this).getFixes();
-            System.out.println("size of dataset without filtering" + records.size());
-
-
-
-        }
                 List<WeightedLatLng> list = new ArrayList<>();
                 WeightedLatLng point;
 
@@ -336,55 +337,30 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                             .gradient(gradient1)
                             .build();
 
-                    //mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
+
 
 
                     //mProvider1.setWeightedData(list);
                     //mOverlay.clearTileCache();
 
-                    //if (mOverlay == null) {
+                    if (mOverlay == null)
                     mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
+                    else
+                    {
+                        mProvider1.setWeightedData(list);
+                        mOverlay.clearTileCache();
+                    }
+
                 }
 
                 else
-                   Toast.makeText(MapActivity.this, "No dataset is available to overlay, please do your recording", Toast.LENGTH_LONG).show();
+                   Toast.makeText(MapActivity.this, "No dataset is available to overlay, please do your recording", Toast.LENGTH_SHORT).show();
 
 
 
     }
-/*
-    mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener(){
-            public void onCameraChange(CameraPosition position) {
 
-                float maxZoom = 14;
-                float minZoom = 10;
-
-
-                if (heatMaps.isChecked())
-                    heatMaps.setChecked(false);
-
-                if (position.zoom > maxZoom) {
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(maxZoom));
-
-                }
-                if (position.zoom < minZoom) {
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(minZoom));
-
-                }
-
-
-
-                lastzoom = position.zoom;
-
-
-            }
-
-        });
-
- -----------------------------------------------------
-        ------------------------------------------------
-
-
+ /*
 
     private Location getLocation()
     {
@@ -447,23 +423,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
 
 */
-/*
 
-/*
-
-if (lastZoom < minZoom)
-            {
-                if (mOverlay != null)
-                    mOverlay.remove();
-
-                if (heatMaps.isChecked())
-                {
-                    heatMaps.setChecked(false);
-                    Toast.makeText(MapActivity.this, "this zoom level is not suitable, please zoom in", Toast.LENGTH_SHORT);
-                    System.out.println("this zoom level is not suitable, please zoom in");
-                  }
-
- */
 
 
 
