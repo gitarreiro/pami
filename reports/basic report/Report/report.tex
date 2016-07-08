@@ -4,9 +4,18 @@
 \usepackage{url}
 \usepackage[nochapters]{../classicthesis} % nochapters
 \usepackage{graphicx}
+\graphicspath{ {images/} }
 \usepackage{booktabs}
 \usepackage{float}
 
+
+
+
+
+
+
+
+\usepackage{hyperref}
 
 \begin{document}
     \pagestyle{plain}
@@ -21,130 +30,15 @@
  %   \end{abstract}
        
     \tableofcontents
-    
-    \section{Ideation}
-\subsection  {Problem statement}
-\begin{itemize}
-\item \textit{What is the context of the problem? }
-
-Many roads are damaged because of different causes.
-\item \textit{Why is it a problem?}
-
-Bad quality of roads damages vehicles and may interrupt or slow the traffic.
-\item \textit{Who has the problem?}
-
-Bike riders or vehicles owners.
-Municipalities trying to maintain roads in a good quality.
-
-
-\end{itemize}
-
-     	
-
-\subsection{Steps to Personas / Personas}
-\begin{itemize}
-\item Finding users
-
-\begin{itemize}
-\item \textit{Who are they?}
-
-Bike riders, vehicles owners and municipalities trying to maintain roads in a good quality.
-
-\item \textit{How many are they?}
-
-Theoretically, the app would attract a lot of users.
-
-\item  	\textit{What do they do with the system?}
-
-\begin{itemize}
-\item Check instantly the quality of roads while riding their bikes.
-
-\item Detect and localize chuckholes thanks to heatmaps and markers on the map.
-
-\item Avoid riding on damaged roads thanks to heatmaps.
-\end{itemize}
-
-\end{itemize}
-
- \end{itemize}   
- 
- \begin{itemize}
-\item Building a hypothesis
- \begin{itemize}
- \item  	\textit{What are the differences between the users?}
- 
- Some users want just to avoid chuckholes during their bike rides while others will have fun to utilize the app or need it for specific reasons. 
- \end{itemize}
-  \end{itemize}
-   
-   \begin{itemize}
-\item Verification
-
-Personas: Municipalities’ agents and bikers.
- 
-   \end{itemize} 
- 
- 
-   
-   \begin{itemize}
-   
-\item Finding patterns
- \begin{itemize}
- \item  	 	\textit{Does the initial grouping hold? Are there other groups to consider?}
-\begin{itemize}
- \item  The initial grouping done in the previous step still holds.
- \item No more groups to consider by now.
-\end{itemize} 
- \item  	\textit{Are all equally important?}
- 
- Municipalities’ agents and some groups of bikers may have more importance:  more active users that will frequently use the app and evaluate its functionalities much deeper than others who would be contented to use specific features.
- 
-   \end{itemize} 
-   
-   
-  \item Constructing personas
-   
-   
-   \begin{table}[ht]
-\centering
-\label{my-label}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}c|c|c|c|@{}}
-\cmidrule(l){2-4}
-                                                          & \textbf{Martin}                                                                                                                                                                                                               & \textbf{Anna}        & \textbf{Andreas}                                                                                                             \\ \midrule
-\multicolumn{1}{|c|}{Character}                           & Extrovert                                                                                                                                                                                                                     & Extrovert            & Introvert                                                                                                                    \\ \midrule
-\multicolumn{1}{|c|}{Age}                                 & 30 yo                                                                                                                                                                                                                         & 22 yo                & 45 yo                                                                                                                        \\ \midrule
-\multicolumn{1}{|c|}{Occupation}                          & Officer and professional biker                                                                                                                                                                                                & Student              & Municipality's agent                                                                                                         \\ \midrule
-\multicolumn{1}{|c|}{Interest}                            & \begin{tabular}[c]{@{}c@{}}High interest in the\\ app and uses frequently all features.\end{tabular}                                                                                                                          & Normal interest      & Interest due to his work duties                                                                                              \\ \midrule
-\multicolumn{1}{|c|}{When does the user utilize the app?} & Weekends                                                                                                                                                                                                                      & No particular time   & Weekdays                                                                                                                     \\ \midrule
-\multicolumn{1}{|c|}{Why?}                                & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}- Detect and localize chuckholes.\\ - Avoid chuckholes\\ and ride across smooth sections.\\ - Test the app performance and suggest\\ improvements or extensions.\end{tabular}} & Avoid chuckholes and & \begin{tabular}[c]{@{}c@{}}Use the app to detect\\ new chuckholes or to \\ localize old chuckholes to be fixed.\end{tabular} \\ \bottomrule
-\end{tabular}%
-}
-\end{table}
+\newpage    
+    \section{Motivation and problem statement}
 
 
 
-\item Defining situations
+Even though municipalities try to maintain and repair roads, many segments still contain chuckholes that vehicle owners prefer to avoid to drive or to bike on because they would so likely damage their vehicles and slow or interrupt the traffic.
 
-\begin{itemize}
- \item  	\textit{What are the needs of this persona?}
- \item  	\textit{What are the situations?}
+This was the background motivation to develop a mobile application, in a biking context, that helps users to avoid damaged sections of roads or to detect and localize chuckholes.
 
-
- \end{itemize} 
- 
- 
- \item Validation
-
- \end{itemize} 
- 
- 
- 
- 
- 
-\subsection  {Scenarios}
- 
- 
  
  
  
@@ -154,26 +48,99 @@ Personas: Municipalities’ agents and bikers.
 	\begin{itemize} 
 	\item Bike: Drössiger 650B full suspension.
 	\item Smartphone (Samsung Galaxy S4 Active).
-	\item Fix spot of the mobile phone: ???
+	\item Fix spot of the mobile phone: on the handlebar.
 	
 	
 	\end{itemize}
 	% send me a picture of your bike with the fix and the phone
-	
-	
 
 
-    \section{Architecture}
+    \section{Architecture and flow of information}
 	% maybe UML class diagram, if suitable
 	
 	\begin{figure}[H]
 	\centering
-    \includegraphics[width=16cm, height=12cm]{UML}
+    \includegraphics[width=16cm, height=12cm]{pic1}
     
     \end{figure}
     
+    
+    
+    
     \section{App Features}
 	% pictures etc. here
+    
+    \subsection{ Recording data}
+    
+    
+    
+    
+    \subsection{ Heatmap Overlay}
+    
+    Heatmaps make it easy for viewers to understand the distribution and relative intensity of data points on a google map and was overlaid using the Google Maps Android Heatmap Utility.
+    We opted for a dynamic heatmapping that requires a collection of 'weighted' latitude/longitude coordinates, each with an intensity value that will determine its associated color.
+    Highest values of intensity will be mapped by default to red while lowest ones to green. Concerning the values in between, the given color is generated using interpolation between red and green. 
+    Our collection will retrieve locations from the DataStore structure and their corresponding g-force values which will represent the intensity parameter. Consequently, locations on a smooth road will get green color while chuckholes will be colored in red and points with average g-forces values will be in yellow.
+     
+    \begin{figure}[H]
+    \centering
+	
+	  
+	   
+       \includegraphics[width=5cm, height=8cm]{pic4}
+    
+       
+        \end{figure}
+    
+    Unfortunately, the heatmap utility suffers from some limitations that are described in the following article: 
+    \url{http://cartographicperspectives.org/index.php/journal/article/view/cp80-deboer/1420}. The main handicap that affects our overlay is that the heatmaps circles overlap at low zoom levels which causes fake coloring and this is due to the fact that the 'Intensity' parameter is additive: the overlap area of two circles of intensity 1 will lead to an overall intensity 2.
+    \begin{figure}[H]
+    \centering
+	
+	  
+	   
+       \includegraphics[width=10cm, height=10cm]{pic6}
+    
+       
+        \end{figure}
+    
+    To overcome this issue, we apply a filtering on our dataset, within a specific zoom range where the overlaps occurs, in an attempt to reduce fake coloring of heatmaps.
+    
+    
+    
+    \subsection{ Markers on chuckholes Overlay}
+    
+    This feature was implemented to localize chuckholes that were detected during a bike ride. The locations are retrieved from the DataStore structure described previously. Using the Google Maps Android Marker Clustering Utility, a marker will be overlaid on the google map, on each location where the corresponding g-force level reaches or exceeds a specific threshold value = 3.5. 
+    
+    When a user views the map at a high zoom level, individual markers will be shown on the map. When a user zooms out, the markers gather together into clusters, to make viewing the map easier.
+    \begin{figure}[H]
+    \centering
+	
+	  
+	   
+       \includegraphics[width=5cm, height=8cm]{pic3}
+    
+       
+        \end{figure}
+    
+    In case of no chuckhole in the area, the user will get a feedback via a toast message.
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     % bib stuff
@@ -181,5 +148,18 @@ Personas: Municipalities’ agents and bikers.
     \addtocontents{toc}{\protect\vspace{\beforebibskip}}
     \addcontentsline{toc}{section}{\refname}    
     \bibliographystyle{plain}
-    \bibliography{../Bibliography}
+    
+    \bibliography{./Bibliography}
+    %Google Maps Android API : %https://developers.google.com/maps/documentation/android-api
+    
+    %https://developer.android.com
+    
+    %Android Developers Blog : %http://android-developers.blogspot.de/
+    
+    %http://stackoverflow.com/
+    
+    
+    
+    
+    
 \end{document}
