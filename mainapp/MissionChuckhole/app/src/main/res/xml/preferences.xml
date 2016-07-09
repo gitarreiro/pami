@@ -4,9 +4,10 @@
         android:key="threshold_smooth"
         android:summary="Adjust Threshold for smooth road"
         android:title="Threshold (smooth road)"
-        android:defaultValue="15"/>
+        android:defaultValue="2"/>
     <EditTextPreference
         android:key="threshold_cobble"
         android:summary="Adjust Threshold for cobblestones"
-        android:title="Threshold (cobblestones)"/>
+        android:title="Threshold (cobblestones)"
+        android:defaultValue="3"/>
 </PreferenceScreen>

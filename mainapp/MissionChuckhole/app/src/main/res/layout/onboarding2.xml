@@ -28,7 +28,8 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/guide_accgraph"/>
+            android:background="@drawable/guide_accgraph"
+            android:contentDescription="@string/cd_guide_accgraph"/>
 
     </LinearLayout>
 
@@ -57,7 +58,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/btn_onboarding_2"
-            android:background="@drawable/cycling_lefttoright" />
+            android:background="@drawable/cycling_lefttoright"
+            android:contentDescription="@string/cd_cycling"/>
 
     </LinearLayout>
 

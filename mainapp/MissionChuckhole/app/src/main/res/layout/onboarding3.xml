@@ -28,7 +28,8 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/guide_mapview"/>
+            android:background="@drawable/guide_mapview"
+            android:contentDescription="@string/cd_guide_mapview"/>
 
     </LinearLayout>
 
@@ -50,16 +51,14 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        >
+        android:layout_centerHorizontal="true">
 
         <ImageButton
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/btn_onboarding_3"
-            android:background="@drawable/cycling_lefttoright" />
+            android:background="@drawable/cycling_lefttoright"
+            android:contentDescription="@string/cd_cycling"/>
 
     </LinearLayout>
-
-
 </RelativeLayout>
