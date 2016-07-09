@@ -41,8 +41,6 @@ public class RecordButtonListener implements View.OnClickListener {
         // start recording: service? just record and store data periodically
         this.isRecording = !this.isRecording;
         if (isRecording) {
-            //btn.setText("STOP RECORDING");
-            //btn.setBackground(btnPressedDrawable);
             btn.setBackgroundDrawable(btnPressedDrawable);
             if (manager != null && listener != null && listener.getMap() != null) {
                 try {
@@ -56,8 +54,6 @@ public class RecordButtonListener implements View.OnClickListener {
             activity.startService(intent);
             activity.startUpdatingMap(true);
         } else {
-            //btn.setText("START RECORDING");
-            //btn.setBackground(btnReleasedDrawable);
             btn.setBackgroundDrawable(btnReleasedDrawable);
             if (manager != null && listener != null && listener.getMap() != null) {
                 try {

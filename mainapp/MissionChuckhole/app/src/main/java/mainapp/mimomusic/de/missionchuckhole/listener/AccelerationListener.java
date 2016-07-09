@@ -7,19 +7,33 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.util.Log;
-import android.widget.Toast;
 
 import mainapp.mimomusic.de.missionchuckhole.data.AccFix;
 import mainapp.mimomusic.de.missionchuckhole.data.DataStore;
 
 /**
+ * AccelerationListener listens to sensor events of the acceleration sensor, creates AccFixes from
+ * them and hands it over to the DataStore
+ *
  * Created by MiMo
  */
 public class AccelerationListener implements SensorEventListener {
+
+    /**
+     * the application's Context
+     */
     private Context context;
+
+    /**
+     * the last saved location
+     */
     private Location lastLocation;
 
+    /**
+     * Constructor for an AccelerationListener
+     *
+     * @param context the application's Context
+     */
     public AccelerationListener(Context context) {
         this.context = context;
     }
@@ -27,13 +41,15 @@ public class AccelerationListener implements SensorEventListener {
     @Override
     public synchronized void onSensorChanged(SensorEvent event) {
 
+        // get the sensor values
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
 
+        // calculate the G force
         double gForce = Math.sqrt(x * x + y + y + z * z) / SensorManager.GRAVITY_EARTH;
 
-
+        //get the last known Location
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
         // getting GPS status
@@ -46,27 +62,16 @@ public class AccelerationListener implements SensorEventListener {
 
         Location location = null;
         try {
-            if (!isGPSEnabled && !isNetworkEnabled) {
-                // no network provider is enabled
-            } else {
+            if (isGPSEnabled || isNetworkEnabled) {
 
-
-                // First get location from Network Provider
+                // get location from Network Provider
                 if (isNetworkEnabled) {
 
-                    //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-                    Log.d("Network", "Network");
                     location = locationManager
                             .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 }
-                // if GPS Enabled get lat/long using GPS Services
+                // get location from GPS
                 if (isGPSEnabled) {
-                    /*locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-                    */
-                    Log.d("GPS Enabled", "GPS Enabled");
                     location = locationManager
                             .getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 }
@@ -76,32 +81,28 @@ public class AccelerationListener implements SensorEventListener {
             e.printStackTrace();
         }
 
-        //no location found
+        // no location found: do not store an AccFix
         if (location == null) {
             return;
         }
 
 
-        //location is equal to last location, maybe TODO: exchange last AccFix if accuracy is better now
+        // location is equal to last location: do not store an AccFix
         if (lastLocation != null
                 && lastLocation.getLatitude() == location.getLatitude()
                 && lastLocation.getLongitude() == location.getLongitude()) {
             return;
         }
 
-
         AccFix fix = new AccFix(x, y, z, gForce, location);
 
         DataStore.getInstance(context).storeFix(fix);
 
-        //}
-
         lastLocation = location;
-
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        // do nothing
     }
 }

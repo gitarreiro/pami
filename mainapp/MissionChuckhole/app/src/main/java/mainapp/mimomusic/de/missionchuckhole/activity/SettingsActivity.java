@@ -7,6 +7,8 @@ import android.preference.PreferenceFragment;
 import mainapp.mimomusic.de.missionchuckhole.R;
 
 /**
+ * Activity to display and save the App Settings
+ *
  * Created by MiMo
  */
 public class SettingsActivity extends PreferenceActivity {
@@ -18,6 +20,9 @@ public class SettingsActivity extends PreferenceActivity {
 
     }
 
+    /**
+     * Fragment to handle getting preferences from resourcces
+     */
     public static class MyPreferenceFragment extends PreferenceFragment
     {
         @Override

@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import mainapp.mimomusic.de.missionchuckhole.listener.AccelerationListener;
 
 /**
+ * Service that does recording of acceleration sensor values and GPS fixes
+ *
  * Created by MiMo
  */
 public class RecordService extends Service {
@@ -33,12 +35,18 @@ public class RecordService extends Service {
         this.manager.unregisterListener(accelerationListener);
     }
 
+    /**
+     * Inits the main variables
+     */
     private void init() {
         accelerationListener = new AccelerationListener(this);
         manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
     }
 
+    /**
+     * Starts the recording process
+     */
     private void startRecording() {
         manager.registerListener(accelerationListener, manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -47,7 +55,6 @@ public class RecordService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        System.out.println("Service.onBind()");
         return null;
     }
 }

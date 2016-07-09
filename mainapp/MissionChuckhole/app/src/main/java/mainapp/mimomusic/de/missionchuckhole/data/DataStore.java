@@ -5,35 +5,58 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.Location;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Class that handles data storing for the whole app
+ * <p/>
  * Created by MiMo
  */
 public class DataStore {
     private static DataStore instance;
     private List<AccFix> fixes;
 
-    // Database fields
+    /**
+     * the database used for this application
+     */
     private SQLiteDatabase database;
+
+    /**
+     * helper class instance to access the database
+     */
     private ChuckSQLiteHelper dbHelper;
+
+    /**
+     * the columns used for the database
+     */
     private String[] allColumns = {ChuckSQLiteHelper.COLUMN_ID,
             ChuckSQLiteHelper.COLUMN_FIX};
 
+    /**
+     * the intelligent data set that stores the AccFixes
+     */
     private ChuckDataSet dataSet;
 
-
+    /**
+     * Constructor for a DataStore that initializes the (hidden to fullfil the Singleton Pattern)
+     *
+     * @param context the application's Context
+     */
     private DataStore(Context context) {
         dbHelper = new ChuckSQLiteHelper(context);
-        dropDatabase();
         //dropTable(ChuckSQLiteHelper.TABLE_FIXES);
         dataSet = new ChuckDataSet();
         loadFixes(context);
     }
 
+    /**
+     * Get the only instance available for this app
+     *
+     * @param context the application's Context
+     * @return the DataStore instance
+     */
     public static DataStore getInstance(Context context) {
         if (instance == null) {
             instance = new DataStore(context);
@@ -41,14 +64,18 @@ public class DataStore {
         return instance;
     }
 
-    private void dropDatabase() {
-
-    }
-
+    /**
+     * Closes the database
+     */
     public void closeDB() {
         dbHelper.close();
     }
 
+    /**
+     * Drops the table with the specified name
+     *
+     * @param tableName the name of the table to drop
+     */
     private void dropTable(String tableName) {
         try {
             database = dbHelper.getWritableDatabase();
@@ -60,6 +87,11 @@ public class DataStore {
         }
     }
 
+    /**
+     * Stores a single AccFix.
+     *
+     * @param fix the AccFix to store
+     */
     public void storeFix(AccFix fix) {
 
         if (fixes.contains(fix)) {
@@ -68,15 +100,6 @@ public class DataStore {
 
         dataSet.add(fix);
 
-/*
-        Location home = new Location("dummy");
-        home.setLatitude(48.561960);
-        home.setLongitude(13.578143);
-
-        if(fix.getLocation().distanceTo(home) <50) {
-            return;
-        }
-*/
         this.fixes.add(fix);
         try {
             database = dbHelper.getWritableDatabase();
@@ -92,111 +115,31 @@ public class DataStore {
 
         }
     }
-/*
-    public List<AccFix> getFixes(int zoomLevel) {
-        Location home = new Location("dummy");
-        home.setLatitude(48.561960);
-        home.setLongitude(13.578143);
 
-
-        List<AccFix> fixes = dataSet.getData(zoomLevel);
-        fixes.add(new AccFix(1, 2, 3, 7, home));
-        return fixes;
-
-    }
-
-*/
+    /**
+     * Gets all available AccFixes
+     *
+     * @return a List of AccFixes
+     */
     public List<AccFix> getFixes() {
-        List<AccFix> tmp = new ArrayList<>();
-
-        /*
-        Location home = new Location("dummy");
-
-        home.setLatitude(48.561960);
-        home.setLongitude(13.578143);
-
-        List<AccFix> copy = new ArrayList<>();
-        */
-
-
-        for (AccFix fix : fixes) {
-            //copy.add(new AccFix(fix));
-/*
-            for (AccFix snd:fixes) {
-                if (!fix.equals(snd)) {
-                    distances.add(fix.getLocation().distanceTo(snd.getLocation()));
-                }
-            }
-
-
-            if (fix.getLocation().distanceTo(home) < 50) {
-                continue;
-            } */
-
-            tmp.add(fix);
-        }
-        //tmp.add(new AccFix(1, 2, 3, 6, home));
-
-
-
-
-        /*
-        final List<AccFix> coopy = copy;
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-
-                System.out.println("started Thread");
-
-                List<Float> distances = new ArrayList<>();
-
-
-                int counter = 0;
-                int threshold = 500;
-                for (AccFix fst : coopy) {
-                    if (counter > threshold) {
-                        break;
-                    }
-                    for (AccFix snd : coopy) {
-                        if (counter > threshold) {
-                            break;
-                        }
-                        if (!fst.equals(snd)) {
-                            distances.add(fst.getLocation().distanceTo(snd.getLocation()));
-                            counter++;
-                        }
-                    }
-                }
-
-                Collections.sort(distances);
-
-                System.out.println("Distances: " + distances);
-
-            }
-        };
-
-
-        new Thread(r).start();
-        */
-
-        return tmp;
-        //return this.fixes;
+        return this.fixes;
     }
 
+    /**
+     * Gets the fixes suitable for a certain GoogleMap zoom level
+     *
+     * @param zoomLevel the zoom level to get the AccFixes for
+     * @return a List of suitable AccFixes
+     */
     public List<AccFix> getFixes(double zoomLevel) {
-        /*Location home = new Location("dummy");
-        home.setLatitude(48.561960);
-        home.setLongitude(13.578143);
-
-
-        List<AccFix> fixes = dataSet.getData(zoomLevel);
-        fixes.add(new AccFix(1, 2, 3, 6, home));*/
         return dataSet.getData(zoomLevel);
-
     }
 
-
+    /**
+     * Loads the AccFixes from the database
+     *
+     * @param context the application's Context
+     */
     private void loadFixes(Context context) {
 
         fixes = new ArrayList<>();
@@ -212,7 +155,7 @@ public class DataStore {
                 while (!cursor.isAfterLast()) {
                     AccFix fix = cursorToAccFix(cursor);
                     fixes.add(fix);
-                    dataSet.add(fix); //TODO time measurement
+                    dataSet.add(fix);
                     cursor.moveToNext();
                 }
                 // make sure to close the cursor
@@ -225,16 +168,16 @@ public class DataStore {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        System.out.println("DataStore: loaded " + fixes.size() + " AccFixes.");
-
-
     }
 
+    /**
+     * Gets an AccFix from a database Cursor
+     *
+     * @param cursor the database cursor
+     * @return the stored AccFix
+     */
     private AccFix cursorToAccFix(Cursor cursor) {
         String saveString = cursor.getString(1);
         return AccFix.fromString(saveString);
     }
-
-
 }

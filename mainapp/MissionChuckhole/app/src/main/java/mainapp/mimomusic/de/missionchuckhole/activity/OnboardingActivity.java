@@ -12,29 +12,49 @@ import mainapp.mimomusic.de.missionchuckhole.R;
 
 
 /**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- *
+ * Class that handles showing Onboarding sites
  */
 public class OnboardingActivity extends Activity {
+
+    /**
+     * minimum swipe distance to get to the next site
+     */
     private static final int SWIPE_MIN_DISTANCE = 120;
+
+    /**
+     * max swipe distance to get to the next site
+     */
     private static final int SWIPE_MAX_OFF_PATH = 250;
+
+    /**
+     * swipe threshold velocisty
+     */
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
+    /**
+     * ViewFlipper to swipe between sites
+     */
     ViewFlipper viewSwitcher;
+
+    /**
+     * GestureDetector to handle swipes
+     */
     private GestureDetector gestureDetector;
+
+    /**
+     * Listener to detect swipes
+     */
     View.OnTouchListener gestureListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_onboarding);
 
         viewSwitcher = (ViewFlipper) findViewById(R.id.viewFlipper);
 
-        ImageButton button1 = (ImageButton) findViewById(R.id.btn_onboarding_1);
-        button1.setOnClickListener(new View.OnClickListener() {
+        ImageButton ibOnboarding1 = (ImageButton) findViewById(R.id.btn_onboarding_1);
+        ibOnboarding1.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -46,8 +66,8 @@ public class OnboardingActivity extends Activity {
             }
         });
 
-        ImageButton button2 = (ImageButton) findViewById(R.id.btn_onboarding_2);
-        button2.setOnClickListener(new View.OnClickListener() {
+        ImageButton ibOnboarding2 = (ImageButton) findViewById(R.id.btn_onboarding_2);
+        ibOnboarding2.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -59,8 +79,8 @@ public class OnboardingActivity extends Activity {
             }
         });
 
-        ImageButton doneB = (ImageButton) findViewById(R.id.btn_onboarding_3);
-        doneB.setOnClickListener(new View.OnClickListener() {
+        ImageButton ibOnboardingDone = (ImageButton) findViewById(R.id.btn_onboarding_3);
+        ibOnboardingDone.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -82,15 +102,18 @@ public class OnboardingActivity extends Activity {
             try {
                 if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
                     return false;
-                // right to left swipe
                 if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
                         && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+
+                    // right to left swipe
                     viewSwitcher.setInAnimation(getApplicationContext(), R.anim.in_from_right);
                     viewSwitcher.setOutAnimation(getApplicationContext(), R.anim.out_to_left);
 
                     viewSwitcher.showNext();
                 } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
                         && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+
+                    // left to right swipe
                     viewSwitcher.setInAnimation(getApplicationContext(), R.anim.in_from_left);
                     viewSwitcher.setOutAnimation(getApplicationContext(), R.anim.out_to_right);
 

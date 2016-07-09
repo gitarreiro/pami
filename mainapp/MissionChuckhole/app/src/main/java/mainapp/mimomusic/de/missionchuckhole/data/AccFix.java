@@ -1,18 +1,49 @@
 package mainapp.mimomusic.de.missionchuckhole.data;
 
 import android.location.Location;
+import android.support.annotation.NonNull;
 
 /**
+ * Class AccFix that stores a single fix created at recording state
+ *
  * Created by MiMo
  */
 public class AccFix implements Comparable {
 
+    /**
+     * the x value that came from the sensor
+     */
     private double x;
+
+    /**
+     * the y value that came from the sensor
+     */
     private double y;
+
+    /**
+     * the z value that came from the sensor
+     */
     private double z;
+
+    /**
+     * the calculated g force oout of x, y and z
+     */
     private double gForce;
+
+    /**
+     * the Location of this AccFix
+     */
     private Location location;
 
+    /**
+     * Constructor for an AccFix that sets the initial variables
+     *
+     * @param x the x value
+     * @param y the y value
+     * @param z the z value
+     * @param gForce the calculated g force
+     * @param location the location of the fix
+     */
     public AccFix(double x, double y, double z, double gForce, Location location) {
         this.x = x;
         this.y = y;
@@ -21,15 +52,12 @@ public class AccFix implements Comparable {
         this.location = location;
     }
 
-
-    public AccFix(AccFix toCopy) {
-        this.x=toCopy.x;
-        this.y=toCopy.y;
-        this.z=toCopy.z;
-        this.gForce = toCopy.gForce;
-        this.location=toCopy.location;
-    }
-
+    /**
+     * Creates an AccFix object from string
+     *
+     * @param saveString the string to create the AccFix from
+     * @return the AccFix
+     */
     public static AccFix fromString(String saveString) {
         String[] splitted = saveString.split(";");
         double x = Double.parseDouble(splitted[0]);
@@ -44,7 +72,6 @@ public class AccFix implements Comparable {
             location = new Location(provider);
             location.setLatitude(latitude);
             location.setLongitude(longitude);
-
         }
         return new AccFix(x, y, z, gForce, location);
     }
@@ -61,21 +88,37 @@ public class AccFix implements Comparable {
         return result;
     }
 
+    /**
+     * Getter for the g force
+     *
+     * @return the g force
+     */
     public double getgForce() {
         return gForce;
     }
 
+    /**
+     * Getter for the Location
+     *
+     * @return the location
+     */
     public Location getLocation() {
         return location;
     }
 
+    /**
+     * Indicates if this fix has a big g force value
+     *
+     * @return true if a ig chuckhole has been detected, else false
+     */
     public boolean isBigChuckhole() {
         return this.gForce >= 3.5;
     }
 
     @Override
-    public int compareTo(Object another) {
+    public int compareTo(@NonNull Object another) {
 
+        // compare AccFix concerning Location
         if (!(another instanceof AccFix)) {
             return -1;
         }
@@ -96,6 +139,6 @@ public class AccFix implements Comparable {
 
     @Override
     public boolean equals(Object o) {
-        return this.compareTo(o) == 0;
+        return o instanceof AccFix && this.compareTo(o) == 0;
     }
 }
