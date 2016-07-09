@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // show Onboarding on first app start
         SharedPreferences prefs = getSharedPreferences(Constants.PREFS_FILE, MODE_PRIVATE);
-        if (prefs.getBoolean(Constants.FIRST_APP_VISIT, true)) {
+        if (true||prefs.getBoolean(Constants.FIRST_APP_VISIT, true)) {//TODO remove
             Intent intent = new Intent(this, OnboardingActivity.class); // war getBaseContext()
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
