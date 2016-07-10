@@ -30,7 +30,7 @@ public class ChuckSQLiteHelper extends SQLiteOpenHelper {
     /**
      * the database name
      */
-    private static final String DATABASE_NAME = "test_fixes.db";
+    private static final String DATABASE_NAME = "fixes.db";
 
     /**
      * the database version
