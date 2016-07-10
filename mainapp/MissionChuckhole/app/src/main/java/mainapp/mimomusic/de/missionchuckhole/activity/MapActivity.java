@@ -55,6 +55,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private double lastZoom;
     boolean test;
     private CheckBox heatMaps, markers;
+    List<WeightedLatLng> list1 = new ArrayList<>();
 
 
 
@@ -133,8 +134,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     dynamic_heatmap();
 
                 else
-                if (mOverlay!=null)
+                if (mOverlay!=null) {
+
+
                     mOverlay.remove();
+                    System.out.println("removal of overlay done");
+                }
 
 
             }
@@ -278,11 +283,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     {
         double lat, lng, intensity;
 
+
         System.out.println("last zoom before overlay" + lastZoom);
 
         records = DataStore.getInstance(this).getFixes(lastZoom);
 
                 List<WeightedLatLng> list = new ArrayList<>();
+
                 WeightedLatLng point;
 
 
@@ -304,19 +311,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 }
                 if (list.size() > 0)
                 {
-/*
-                    int[] Colors1 =
-                            {
-                                    Color.rgb(0, 255, 0),  //light green
-                                    Color.rgb(255, 0, 0)  // red
-                            };
 
-                    float[] StartPoints =
-                            {
-                                    0.2f, 1f
-                            };
-
-                    Gradient gradient1 = new Gradient(Colors1, StartPoints);*/
 
                     mProvider1 = new HeatmapTileProvider.Builder()
                             .weightedData(list)
@@ -324,18 +319,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                             .build();
 
 
+                        if (mOverlay !=null)
+                            mOverlay.remove();
+
+                        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
+                        System.out.println("overlay done");
+
+
 
 
                     //mProvider1.setWeightedData(list);
                     //mOverlay.clearTileCache();
-
-                    if (mOverlay == null)
-                    mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
-                    else
-                    {
-                        mProvider1.setWeightedData(list);
-                        mOverlay.clearTileCache();
-                    }
 
                 }
 
@@ -345,9 +339,5 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
 
     }
-
-
-
-
 
 }
