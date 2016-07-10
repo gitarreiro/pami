@@ -50,7 +50,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private HeatmapTileProvider mProvider1;
     private TileOverlay mOverlay;
     private List<AccFix> records = new ArrayList<>();
-    //private List<AccFix> records2 = new ArrayList<>();
     private ClusterManager<MyItem> mClusterManager;
     private int i;
     private double lastZoom;
@@ -112,11 +111,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             e.printStackTrace();
         }
 
-        //mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
 
 
 
-        //mMap.getUiSettings().setCompassEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(true);
 
         //mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
@@ -197,18 +196,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 e.printStackTrace();
             }
 
-
-
-
-            // Get last known location
-            //Location myLocation = locationManager.getLastKnownLocation(provider);
-
-            //LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            //Criteria criteria = new Criteria();
-            //criteria.setAccuracy(Criteria.ACCURACY_FINE);
-            //String provider = locationManager.getBestProvider(criteria, true);
-            //Location myLocation = locationManager.getLastKnownLocation(provider);
-
             if (myLocation !=null)
             {
             lat = myLocation.getLatitude();
@@ -225,9 +212,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Location, 13));
            heatMaps.setChecked(true);
-           //mMap.setOnCameraChangeListener(this);
 
 
+           mMap.setOnCameraChangeListener(this);
 
 
     }
@@ -317,7 +304,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 }
                 if (list.size() > 0)
                 {
-
+/*
                     int[] Colors1 =
                             {
                                     Color.rgb(0, 255, 0),  //light green
@@ -329,12 +316,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                                     0.2f, 1f
                             };
 
-                    Gradient gradient1 = new Gradient(Colors1, StartPoints);
+                    Gradient gradient1 = new Gradient(Colors1, StartPoints);*/
 
                     mProvider1 = new HeatmapTileProvider.Builder()
                             .weightedData(list)
                             .radius(10)
-                            .gradient(gradient1)
                             .build();
 
 
@@ -360,69 +346,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     }
 
- /*
-
-    private Location getLocation()
-    {
-        boolean isGPSEnabled, isNetworkEnabled;
-        double lat, lng;
-        Location location;
-        try {
-
-            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            //locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-            // getting GPS status
-            isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            // getting network status
-            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (isGPSEnabled && isNetworkEnabled)
-
-            {
-                //canGetLocation = true;
-                if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-
-                    if (locationManager != null) {
-                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (location != null) {
-                            lat = location.getLatitude();
-                            lng = location.getLongitude();
-                        }
-                    }
-                }
-                // if GPS Enabled get lat/long using GPS Services
-                if (isGPSEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
-                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-
-                        if (locationManager != null) {
-                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            if (location != null) {
-                                lat = location.getLatitude();
-                                lng = location.getLongitude();
-                            }
-                        }
-                    }
-                }
-            } else {
-                String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION};
-                ActivityCompat.requestPermissions(this, permissions, 0);
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return location;
-    }
-
-
-*/
 
 
 
