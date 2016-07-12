@@ -7,16 +7,10 @@
 \graphicspath{ {img/} }
 \usepackage{booktabs}
 \usepackage{float}
-
-
-
-
-
-
-
-
-
-usepackage{hyperref}
+\usepackage{subfloat}
+\usepackage{subfig}
+\usepackage{hyperref}
+\usepackage[ngerman]{babel}
 
 \begin{document}
     \pagestyle{plain}
@@ -26,16 +20,15 @@ usepackage{hyperref}
     
     \maketitle
     
-%    \begin{abstract}
-        %Maybe we won't need an abstract
- %   \end{abstract}
- 
-\newpage
+% picture titles still german
+
     \tableofcontents
-\newpage    
+    
+
+
     \section{Motivation and problem statement}
 
-
+	
 
 Even though municipalities try to maintain and repair roads, many segments still contain chuckholes that vehicle owners prefer to avoid to drive or to bike on because they would so likely damage their vehicles and slow or interrupt the traffic.
 
@@ -46,19 +39,35 @@ This was the background motivation to develop a mobile application, in a biking 
  
  
     \section{Recommended Setup}
-	%photo of bike, smartphone fix, ...    
-	\begin{itemize} 
-	\item Bike: Drössiger 650B full suspension.
-	\item Smartphone (Samsung Galaxy S4 Active).
-	\item Fix spot of the mobile phone: on the handlebar.
-	
-	
+
+	In order to use the main app \textbf{Mission:Chuckhole}, some requirements are needed.\\
+	Of course, you need a bike to drive along the streets.
+	For the test rides, two bikes have been used:
+
+	\begin{itemize}
+		\item \textbf{Dr"ossiger XRA 650 B}: full suspension All-Mountain-bike (150mm/155mm suspension)
+		\item \textbf{Rotwild G1 2016}: full suspension Downhill-bike (203mm/203mm suspension)
 	\end{itemize}
-	% send me a picture of your bike with the fix and the phone
+
+	%bike pictures
+
+	In order to fix the smartphone on the bike, it is recommended to buy a smartphone fix to safely fix your phone on the handlebar.
+	One good possibility is the mumbi TwoSave smartphone fix depicted in \autoref{fig:smartphone_fix}:
+
+	\begin{figure}[H]
+		\begin{center}
+ 		  \includegraphics[scale=0.3]{img/smartphone_fix.png}
+		  \caption{mumbi TwoSave smartphone fix}
+		  \label{fig:smartphone_fix}
+		\end{center}
+	\end{figure}
+
+	It is suitable for many modern smartphones and provides a good multiple-fixing system so that you will not lose the smartphone.\\
+	Last requirement is of course that \textbf{Mission:Chuckhole} is installed on the used phone.
 
 
     \section{Architecture and flow of information}
-	% maybe UML class diagram, if suitable
+	% you have to write something here. only a piture does not tell anything. explain every step of the picture
 	
 	\begin{figure}[H]
 	\centering
@@ -72,52 +81,51 @@ This was the background motivation to develop a mobile application, in a biking 
 	% pictures etc. here
     
     \textbf{Google Map}
-    
-    All features require a google map. We added it to our app using the Google Maps Android API which automatically handles access to Google Maps servers, data downloading, map display, and response to map gestures. 
-    We also used API calls to add heatmap and markers overlay in clusters.
+    %this is wrong: not all features require it. recording for example works fine without a map
+    All features require a google map. It was added to the app using the Google Maps Android API which automatically handles access to Google Maps servers, data downloading, map display, and response to map gestures. 
+    We also used API calls to add heatmap and markers overlay in clusters. 
     \textbf{Onboarding}
     
     New users will start with an initiation to get an overview about the mode of operation and main functionalities of the app. In subsequent uses, this phase will be skipped.
+    %explain figure: every single figure, what it shows, ...
     
     
     
-    \begin{figure}[H]
-    \centering
-    \minipage{0.32\textwidth}
-    \includegraphics[width=5cm, height=8cm]{pic7} 
-    \endminipage\hfill
-    \minipage{0.32\textwidth}
-    \includegraphics[width=5cm, height=8cm]{pic8}
-    \endminipage\hfill
-    \minipage{0.32\textwidth}
-    \includegraphics[width=5cm, height=8cm]{pic9}
-    \endminipage\hfill
-    
-    
-    
-    \end{figure}
-    
+
+	\begin{figure}[H]
+	  \centering
+	  \subfloat[Onboarding site 1]{\includegraphics[width=0.25\textwidth]{pic7}\label{fig:onboarding_1}}
+	  \hfill
+	  \subfloat[Onboarding site 2]{\includegraphics[width=0.25\textwidth]{pic8}\label{fig:onboarding_2}}
+	  \hfill
+	  \subfloat[Onboarding site 3]{\includegraphics[width=0.25\textwidth]{pic9}\label{fig:onboarding_3}}
+	  \caption{Onboarding at first App start}
+	  \label{fig:onboarding}
+	\end{figure}
+
+
+
+
+
     
     
     \subsection{ Recording data}
-    This feature allows an app user to check the quality of roads during a bike ride.
+    	This feature allows an app user to check the quality of roads during a bike ride.
+    	Using the accelerometer sensor, the app will get the three acceleration axes' values (x, y and z) that are necessary to calculate the g-force (force of acceleration) by applying the following formula:
+
     
-    Using the accelerometer sensor, the app will get the three acceleration axes' values that are necessary to calculate the g-force (force of acceleration) by applying the following formula:
-    
-   \begin{figure}[H]
-	\centering
-    \includegraphics[width=8cm, height=1.5cm]{formule}
-    \end{figure}
-    
-    
-    The GPS will provide precise locations of the phone along the ride.
-    
+	\begin{center}
+		$ gforce = \sqrt{x^2 + y^2 + z^2} $
+	\end{center}
+
+	
+	
     
     
-    
+    %why is this picture here? where should it be?
     \begin{figure}[H]
 	\centering
-    \includegraphics[width=5cm, height=8cm]{pic2}
+    \includegraphics[scale=0.4]{pic2}
     \end{figure}
     
     \textbf{Input}
