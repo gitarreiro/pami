@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // show Onboarding on first app start
         SharedPreferences prefs = getSharedPreferences(Constants.PREFS_FILE, MODE_PRIVATE);
-        if (true||prefs.getBoolean(Constants.FIRST_APP_VISIT, true)) {//TODO remove
+        if (prefs.getBoolean(Constants.FIRST_APP_VISIT, true)) {//TODO remove
             Intent intent = new Intent(this, OnboardingActivity.class); // war getBaseContext()
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
@@ -481,18 +481,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     private void drawHeatmap() {
 
+        System.out.println("drawing heatmap for zoom level "+lastZoom);
+
         // get the data to create the overlay from
         List<AccFix> fixes = DataStore.getInstance(this).getFixes(lastZoom);
+
+        System.out.println("got "+fixes.size()+" fixes");
+
         List<WeightedLatLng> points = new ArrayList<>();
 
         // add a dummy point somewhere the user won't scroll to
         Location somewhereInNowhere = new Location("dummy"); //TODO replace by a point far away
-        somewhereInNowhere.setLatitude(84.651365);
-        somewhereInNowhere.setLongitude(23.420551);
+        somewhereInNowhere.setLatitude(64.409029);
+        somewhereInNowhere.setLongitude(-31.560097);
 
-        AccFix homeFix = new AccFix(6, 0, 0, 6, somewhereInNowhere);
-        if (!fixes.contains(homeFix))
-            fixes.add(homeFix);
+        AccFix somewhereInNowhereFix = new AccFix(7, 0, 0, 7, somewhereInNowhere);
+        if (!fixes.contains(somewhereInNowhereFix))
+            //fixes.add(somewhereInNowhereFix);
 
         for (AccFix fix : fixes) {
 

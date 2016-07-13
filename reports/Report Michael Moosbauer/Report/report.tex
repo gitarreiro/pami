@@ -4,6 +4,7 @@
 \usepackage{url}
 \usepackage[nochapters]{../classicthesis} % nochapters
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{subfig}
 
 
@@ -24,21 +25,71 @@
     \tableofcontents
 
 
-	% Bildunterschriften sind noch deutsch
+	
 
     
     \section{Introduction}
 	\textbf{Mission:Chuckhole} is an Android App that provides the functionality of finding chuckholes during a bike ride. 
 	The following sections briefly describe the single functionalities and the parts that have been implemented by Michael Moosbauer.
+
+
+    \section{Preliminary Work}
+
+	This section describes the work that has been done before writing the main app.
+	It had to be done in order to get default values for the main app and also to get a feeling how the acceleration sensor behaves.
+	
+	\subsection{Acceleration Sensor Data Collection}\label{subsec:data_collection}
+		
+		The first step I took was to write a recording app to keep the outputs of the acceleration sensor.
+		This helper app saved the values of the following form to a file:
+
+		\begin{center}
+			x;y;z;gforce
+		\end{center}
+
+		Hereby, x is the x-value, y the y-value, z the z-value from the acceleration sensor and gforce is the gforce calculated from x, y and z.
+		The calculation is done the following way:
+
+		\begin{center}
+			$ gforce = \frac{\sqrt{x^2 + y^2 + z^2}}{gforce\_earth} $
+		\end{center}
+
+		The resulting file has to be placed on a computer where the program of \autoref{subsec:finding_thresholds} to be evaluated.
+		The progress of evaluation is also desribed in this section.
+		
+	\subsection{Finding Thresholds}\label{subsec:finding_thresholds}
+
+		In order to find suitable values for the g force that the acceleration sensor returns, I built a Java programm to evaluate the data recorded with the app described in \autoref{subsec:data_collection}.\\
+		The program reads the data from a file with the format specified in the previous section.
+		Over this dataset, it calculates the minimum, the maximum and the average value of all g forces.
+		It can be assumed that the maximum g force value is a good approximation for finding chuckholes.\\
+		Additionally, a plot for every file is generated that illustrates the distribution of g force values.
+		The plot shows on the x-axis just the number of a g force and on the y-axis the values for the g force.
+		The plots are shown in \autoref{fig:gforce_plots}.
+
+		\begin{figure}[H]
+	  \centering
+	  \subfloat[G Force distribution for a ride on a smooth road]{\includegraphics[width=0.4\textwidth]{img/finding_thresholds_smooth.png}\label{fig:accdist_1}}
+	  \hfill
+	  \subfloat[G Force distribution for a ride on cobblestones]{\includegraphics[width=0.4\textwidth]{img/finding_thresholds_cobble.png}\label{fig:accdist_2}}
+	  \caption{G Force distribution plots}
+	  \label{fig:gforce_plots}
+	\end{figure}
+
+
     
     \section{System Functionalities and Responsibilities}
+
+	This section describes the basic functionalities of the main app \textbf{Mission:Chuckhole}.
+
+
 
 	\subsection{Onboarding}
 		In case the user starts the App for the first time, he gets displayed so-called ``Onboarding'' sites.
 		These sites explain the basic use of the app and are shown in \autoref{fig:onboarding}:
 
 
-	\begin{figure}[h]
+	\begin{figure}[H]
 	  \centering
 	  \subfloat[Onboarding site 1]{\includegraphics[width=0.25\textwidth]{img/onboarding_1.png}\label{fig:onboarding_1}}
 	  \hfill
@@ -55,7 +106,7 @@
 
 	\subsection{Start screen}
 		
-		\begin{figure}[h]
+		\begin{figure}[H]
 		\begin{center}
  		  \includegraphics[scale=0.1]{img/startscreen.png}
 		  \caption{Mission:Chuckhole start screen}
@@ -79,7 +130,7 @@
 	In the same time, the acceleration plot starts displaying the graph of G forces (see \autoref{fig:accplot}).
 	While recording, clicks to the right button are disabled.\\
 	
-	\begin{figure}[h]
+	\begin{figure}[H]
 		\begin{center}
  		  \includegraphics[scale=0.4]{img/acc_plot.png}
 		  \caption{Acceleration plot running}
@@ -90,7 +141,7 @@
 The following pictures illustrate the different states of recording:
 
 
-	\begin{figure}[h]
+	\begin{figure}[H]
 	  \centering
 	  \subfloat[bottom bar on startup]{\includegraphics[width=0.4\textwidth]{img/bottom_bar_standard.png}\label{fig:bb_std}}
 	  \hfill
@@ -136,7 +187,7 @@ The following pictures illustrate the different states of recording:
 	The different lists contain AccFixes with different minimum distance to all other AccFixes of the list.
 	The mapping of zoom level to minimum distance is shown in \autoref{tab:filtering_distances}:
 
-	\begin{table}[h!]
+	\begin{table}[H]
 	  \centering
  
   
@@ -189,7 +240,7 @@ The following pictures illustrate the different states of recording:
 	\end{center}
 	
 	Hereby, latitude and longitude define the location; the provider is a String constant for the issuer of the GPS fix.
-	In this app, possible values for provider are \textbf{network} and\textbf{gps}.\\
+	In this app, possible values for provider are \textbf{network} and \textbf{gps}.\\
 
 	The data storage is basically handled by the class DataStore which is implemented as a Singleton.
 	This class maintains an instance of ChuckDataSet where the AccFixes can be stored and retrieved.\\
@@ -212,7 +263,7 @@ The following pictures illustrate the different states of recording:
 	The DataStore class also handles storing the AccFixes in a SQLite database.
 	The database contains one single table \textbf{fixes} whose scheme is shown in \autoref{tab:table_scheme}.
 
-	\begin{table}[ht]
+	\begin{table}[H]
 	  \centering
    
 	  \begin{tabular}{c|c}
