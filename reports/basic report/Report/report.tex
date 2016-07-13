@@ -12,6 +12,8 @@
 \usepackage{hyperref}
 \usepackage[ngerman]{babel}
 
+
+
 \begin{document}
     \pagestyle{plain}
     \title{\rmfamily\normalfont\spacedallcaps{Mission: Chuckhole}}
@@ -56,27 +58,30 @@ This was the background motivation to develop a mobile application, in a biking 
 	\noindent
 	It is suitable for many modern smartphones and provides a good multiple-fixing system so your phone is well protected.\\
 	Last requirement is of course that our \textbf{Mission:Chuckhole} app is installed on the used phone.
+	During development, we used mostly two different devices: a Samsung Galaxy S4 Active and a Google Nexus 5X.
+	On both devices, the app ran smoothly and without any problems.
 
 
     \section{Basic Implementation idea}
 	
-	To determine the quality of roads, we will use the g-force physical notion. Its stands for the acceleration force that has low values on smooth surfaces. It reacts sensibly on any change in the status of roads and its value will reach average levels on cobbled areas and high peaks on chuckholes.\\
-	The app will use the accelerometer sensor to get  values of the acceleration's 3 axes and consequently calculate the g-force. Each value which will be associated with every corresponding location provided by GPS.\\
-	The data will be stored locally into an SQLite database during the recording session and they will be accessed again to overlay heatmaps or markers on chuckholes.
+	In order to determine the quality of roads, we will use the g force physical notion. 
+	It represents the force that acts on every object that is moved somehow. 
+	In context of \textbf{Mission:Chuckhole}, the forces are measured that act on the smartphone.
+	From these values, it is possible to detect great changes, which can be interpreted as chuckholes.
+	Android phones are equipped with an acceleration sensor that provides values for the forces acting in x, y and z direction.
+	Each g force value calculated of these three single values will be associated with a corresponding location provided by GPS.
+	The data will be stored locally into an SQLite database to access them again in future app launches.\\
+	\autoref{fig:arch_flow} gives an overview of the main parts of \textbf{Mission:Chuckhole}:
 	
 	\begin{figure}[H]
 	\centering
-    \includegraphics[scale = 0.8]{pic1}
-    \caption{Architecture and flow of information of the app }
-		  \label{fig:arch_flow}
-    \end{figure}
-    \noindent
-    \textbf{Recording data} : 
-	It allows the user to check the quality of roads he is biking on.\\
-	\textbf{Heatmap} : 
-	The user will be able to visualize the status of roads in a color distribution.\\
-	\textbf{Markers on chuckholes} : 
-	It displays markers on chuckholes detected during previous recording sessions.
+    	\includegraphics[scale = 0.8]{pic1}
+    	\caption{Architecture and flow of information of the app }
+	\label{fig:arch_flow}
+    	\end{figure}
+    
+	\noindent
+	The next section describes these app features more detailed.
     
     \section{App components and features}
 	% pictures etc. here
@@ -84,7 +89,7 @@ This was the background motivation to develop a mobile application, in a biking 
     
     \textbf{Onboarding}\\
     New users will start with an initiation to get an overview about the mode of operation and main functionalities of the app. In subsequent uses, this phase will be skipped.\\
-    %explain figure: every single figure, what it shows, ...
+    %explain figure: every single figure, what it shows, ... - in full sentences!
     First, the onboarding screen will show the user how to start the recording phase. He has to press the green bike picture everytime he wants to move to the next initiation step. \\
     Second, the attention of the user will be directed to the live visualization graph of g-force values that will be displayed during the ride.\\
     Third, the user will be informed that he can check results of his recording session using the 'heatmaps and markers overlay' features.
@@ -112,7 +117,7 @@ This was the background motivation to develop a mobile application, in a biking 
 
     
 	\begin{center}
-		$ gforce = \sqrt{x^2 + y^2 + z^2} $
+		$ gforce = \frac{\sqrt{x^2 + y^2 + z^2}}{gforce\_earth} $
 	\end{center}
 	\noindent
     \textbf{Input}\\
