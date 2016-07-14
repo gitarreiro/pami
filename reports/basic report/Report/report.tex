@@ -43,7 +43,23 @@ This was the background motivation to develop a mobile application, in a biking 
 
 	\begin{itemize}
 		\item \textbf{Dr"ossiger XRA 650 B}: full suspension All-Mountain-bike (150mm/155mm suspension)
+
+		\begin{figure}[H]
+		\begin{center}
+ 		  \includegraphics[scale=0.05]{bike_dr}
+		  \label{fig:bike_dr}
+		\end{center}
+		\end{figure}
+
 		\item \textbf{Rotwild G1 2016}: full suspension Downhill-bike (203mm/203mm suspension)
+
+		\begin{figure}[H]
+		\begin{center}
+ 		  \includegraphics[scale=0.05]{bike_rw}
+		  \label{fig:bike_rw}
+		\end{center}
+		\end{figure}
+
 	\end{itemize}
 	%bike pictures
 	In order to fix the smartphone on the bike, it is recommended to buy a smartphone fix to safely fix your phone on the handlebar. One good possibility is the mumbi TwoSave smartphone fix depicted in \autoref{fig:smartphone_fix}:
@@ -87,12 +103,12 @@ This was the background motivation to develop a mobile application, in a biking 
 	% pictures etc. here
     
     
-    \textbf{Onboarding}\\
-    New users will start with an initiation to get an overview about the mode of operation and main functionalities of the app. In subsequent uses, this phase will be skipped.\\
-    %explain figure: every single figure, what it shows, ... - in full sentences!
-    First, the onboarding screen will show the user how to start the recording phase. He has to press the green bike picture everytime he wants to move to the next initiation step. \\
-    Second, the attention of the user will be directed to the live visualization graph of g-force values that will be displayed during the ride.\\
-    Third, the user will be informed that he can check results of his recording session using the 'heatmaps and markers overlay' features.
+    \subsection{Onboarding}
+    	Users who start the app for the first time will start with an initiation to get an overview about the mode of operation and main functionalities of the app. In subsequent uses, this phase will be skipped.\\
+    	The first onboarding screen will show the user how to start recording. By pressing the green bike picture, the next onboarding screen will be shown. \\
+    	The second screen explains the live visualization graph of g force values that will be displayed during recording.\\
+    	Finally, the 'heatmaps and markers overlay' features is introduced.\\
+	The onboarding sites are shown in \autoref{fig:onboarding}:
     
 
 	\begin{figure}[H]
@@ -106,56 +122,73 @@ This was the background motivation to develop a mobile application, in a biking 
 	  \label{fig:onboarding}
 	\end{figure}
 	
-	\noindent
-	\textbf{Google Map}\\
-    Some features require a google map. It was added to the app using the Google Maps Android API which automatically handles access to Google Maps servers, data downloading, map display, and response to map gestures. 
-    We also used API calls to add heatmap and markers overlay in clusters.
+	
+    
 
-    \subsection{ Recording data}
-    	This feature allows an app user to check the quality of roads during a bike ride.
-    	Using the accelerometer sensor, the app will get the three acceleration axes' values (x, y and z) that are necessary to calculate the g-force by applying the following formula:
+    \subsection{Recording data}
+    	The recording feature of the app is the important step for gathering data which is then used to display overlays that indicate the quality of roads.
+    	Using the accelerometer sensor, the app will get the three acceleration axes' values (x, y and z) that are necessary to calculate the g force by applying the following formula:
 
     
 	\begin{center}
 		$ gforce = \frac{\sqrt{x^2 + y^2 + z^2}}{gforce\_earth} $
 	\end{center}
-	\noindent
-    \textbf{Input}\\
-    A user has to press the recording button to start the recording phase and once again to stop it.
-    For a better visual distinction at the user side, the button has two different colors depending on its status: brown when it is pressed and red otherwise.\\
-    A user may also want to use the 'Heatmap overlay'  or 'markers on chuckholes' features at once or simultaneously and this is possible by pressing the button on the right bottom.\\
-    \textbf{Ouput}\\
-    The green bike picture is a sign that the ride has just started.\\
-    The graph shows the change of the g-force value during the ride and serves as a second output feedback to assure the user that recording is working well.\\
-    Both will appear after pressing the recording button.\\
-    The third output element is the heatmap that shows the heatmap overlay of previous recording sessions. Moreover, it's dynamically updated to provide real time overlay of the current session.
-    
-    \begin{figure}[H]
-	\centering
-    \includegraphics[scale=0.4]{pic2}
-    \caption{Recording data during a bike ride }
-		  \label{fig:record_data}
+	
+    	\autoref{fig:record_data} shows the start screen of \textbf{Mission:Chuckhole} in the recording phase:
+
+	\begin{figure}[H]
+	  \centering
+    	  \includegraphics[scale=0.4]{pic2}
+    	  \caption{Recording data during a bike ride }
+	  \label{fig:record_data}
     \end{figure}
-    \noindent
-    \textbf{Storage}\\
-    Local storage was done via an SQLite database because ...\\
-    DataStore is an intermediate data structure between the app features and the SQLite database. Each record of the Datastore contains the following attributes: ...
+
+    	A tap on the red recording button in the lower left of the start screen starts the recording process.
+    	For a better visual distinction, the button changes its color to a darker red.
+	At the same time, a green bycicle and its rider show up in the lower right corner of the map.
+	Below the map, a grah shows a course of the g force values of the last seven seconds.
+	During recording, the heatmap overlay of the map is updated every 10 seconds to observe the most recent results of the recording process.
+	A repeated tap onto the recording button stops the recording and opens the big map view.
+	
+    
+    	
+    	
     
     
-    \subsection{ Heatmap Overlay}
     
-    Heatmaps make it easy for viewers to understand the distribution and relative intensity of data points on a google map and was overlaid using the Google Maps Android Heatmap Utility.\\
-    We opted for a dynamic heatmapping that requires a collection of 'weighted' latitude/longitude coordinates, each with an intensity value that will determine its associated color.
-    Highest values of intensity will be mapped by default to red while lowest ones to green. Concerning the values in between, the given color is generated using interpolation between red and green. \\
-    Our collection will retrieve locations from the DataStore structure and their corresponding g-force values which will represent the intensity parameter. Consequently, locations on a smooth road will get green color while chuckholes will be colored in red and points with average g-forces values will be in yellow.\\
-    So an app user will be able to avoid damaged sections of roads or view areas that haven't been checked yet.
+
+
+
+    \subsection{Map View}
+    	In order to give the user the opportunity to easily view the quality of roads, the recording results get displayed on a map. The application uses the Google Maps Android API that automatically handles access to Google Maps servers, data downloading, map display, and response to map gestures. 
+    Additionally, the API is used to add heatmap and markers overlay in clusters.
+	% more on this!
+
+
+    \subsection{Data Storage}
+    \textbf{Mission:Chuckhole} uses data from previous runs in order to be able to show as much information as possible to users.
+    	Therefore, DataStore is an intermediate data structure between the app features and the SQLite database:\\
+	The recorded data is handed over to the DataStore that handles storing to an SQLite database.
+	At every new app start, the data from the database is retrieved by the DataStore and can be used again to create overlays.    
+
+    
+    \subsection{Heatmap Overlay}
+    
+
+	Heatmaps make it easy to understand the distribution and relative intensity of data points on a map.
+	In the context of this application, heatmaps are used to represent the quality of roads: green segments indicate rather smooth roads, reddisch segments may be a signal for bumpy roads.
+	\textbf{Mission:Chuckhole} uses the Google Maps Android Heatmap Utility to achieve this.\\
+    	We opted for a dynamic heatmapping that requires a collection of weighted latitude/longitude coordinates, each with an intensity value that will determine its associated color.
+    	The highest values of intensity will be mapped to red while low ones to green. Concerning the values in between, the given color is generated using interpolation between red and green. \\
+    	The values that will be displayed are in the format of an AccFix that holds both values from the acceleration sensor (including g force, which represents the intensity) and Location data, provided by the GPS sensor.
+	\autoref{fig:heatmap_overlay} shows an example overlay after a bike ride:
      
     \begin{figure}[H]
     \centering
 	   
-       \includegraphics[scale = 0.31]{pic4}
-       \caption{Overlay of heatmap after a bike ride}
-		  \label{fig:heatmap_overlay}
+       	\includegraphics[scale = 0.31]{pic4}
+       	\caption{Heatmap overlay example}
+	\label{fig:heatmap_overlay}
        
     \end{figure}
     
@@ -163,31 +196,30 @@ This was the background motivation to develop a mobile application, in a biking 
     
     
     
-    \subsection{ Markers on chuckholes Overlay}
+    \subsection{Markers on chuckholes Overlay}
     
-    This feature is the second output option for an app user who may want to view locations of chuckholes that were detected during a bike ride in a simple way. The locations are retrieved from the DataStore structure described previously. Using the Google Maps Android Marker Clustering Utility, a marker will be overlaid on each location where the corresponding g-force level reaches or exceeds a specific threshold value = 3.5. \\
-    When a user views the map at a high zoom level, individual markers will be shown on the map. When a user zooms out, the markers gather together into clusters, to make viewing the map easier.
+    This feature is the second option of an overlay available in the application. The locations are retrieved from the DataStore described previously. Using the Google Maps Android Marker Clustering Utility, a marker will be added for each location where the corresponding g force level reaches or exceeds a specific threshold value. This value has been determined in the pre-evaluation steps and can be changed through the Settings. \\
+    When a user views the map at a high zoom level, individual markers will be shown on the map. When a user zooms out, the markers gather together into clusters, to make viewing the map easier. This effect can be recognized in \autoref{fig:markers_overlay}.
     
     \begin{figure}[H]
     \centering
 	
 	   
-       \includegraphics[scale=0.31]{pic3}
-    \caption{Markers on chuckholes in clusters}
-		  \label{fig:markers_overlay}
-       
-        \end{figure}
+       	\includegraphics[scale=0.31]{pic3}
+   	\caption{Markers on chuckholes in clusters}
+	\label{fig:markers_overlay}
+	\end{figure}
     
     
 
     
     
 
-    \section{Problems faced during implementation and lessons learned}
-\subsection{Problems}
+    \section{Problems/Lessons Learned}
+	\subsection{Problems}
 
-
-Unfortunately, the heatmap utility suffers from some limitations [1]. The main handicap that affects our overlay is that the heatmaps circles overlap at low zoom levels which causes fake coloring and this is due to the fact that the 'Intensity' parameter is additive: the overlap area of two circles of intensity 1 will lead to an overall intensity 2.
+	%\cite the article
+	Unfortunately, the heatmap way of working suffers from some limitations concerning our use case [1]. The heatmap's circles overlap at low zoom levels which causes false coloring which occurs due to the fact that the intensity-parameter is additive: the overlap area of two circles of intensity 1 will lead to an overall intensity 2. \Autoref{fig:overlaps} illustrates this behavior:
     
     \begin{figure}[H]
     \centering
@@ -200,9 +232,10 @@ Unfortunately, the heatmap utility suffers from some limitations [1]. The main h
     \noindent
     To overcome this issue, we apply a filtering on our dataset, within a specific zoom range where the overlaps occur, in an attempt to reduce fake coloring of heatmaps.
 
-\subsection{Lessons}
+	\subsection{Lessons learned}
 
-This project was a good occasion to check out the Google maps API for android. However, it suffers from few limitations so it is necessary to review regularly the releases’ notes and updates.
+	%more on this: what are the limitations?
+	This project was a good occasion to check out the Google maps API for android. However, it suffers from few limitations so it is necessary to review regularly the releases’ notes and updates.
 
     
     
