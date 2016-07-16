@@ -72,7 +72,7 @@ This was the background motivation to develop a mobile application, in a biking 
 		\end{center}
 	\end{figure}
 	\noindent
-	It is suitable for many modern smartphones and provides a good multiple-fixing system so your phone is well protected.\\
+	It is suitable for many modern smartphones and provides a good multiple-fixing system so your phone will be well protected.\\
 	Last requirement is of course that our \textbf{Mission:Chuckhole} app is installed on the used phone.
 	During development, we used mostly two different devices: a Samsung Galaxy S4 Active and a Google Nexus 5X.
 	On both devices, the app ran smoothly and without any problems.
@@ -81,7 +81,7 @@ This was the background motivation to develop a mobile application, in a biking 
     \section{Basic Implementation idea}
 	
 	In order to determine the quality of roads, we will use the g force physical notion. 
-	It represents the force that acts on every object that is moved somehow. 
+	It represents the force that acts somehow on every object that is moving. 
 	In context of \textbf{Mission:Chuckhole}, the forces are measured that act on the smartphone.
 	From these values, it is possible to detect great changes, which can be interpreted as chuckholes.
 	Android phones are equipped with an acceleration sensor that provides values for the forces acting in x, y and z direction.
@@ -104,7 +104,7 @@ This was the background motivation to develop a mobile application, in a biking 
     
     
     \subsection{Onboarding}
-    	Users who start the app for the first time will start with an initiation to get an overview about the mode of operation and main functionalities of the app. In subsequent uses, this phase will be skipped.\\
+    	Users who launch the app for the first time will start with an initiation to get an overview about the mode of operation and main functionalities of the app. In subsequent uses, this phase will be skipped.\\
     	The first onboarding screen will show the user how to start recording. By pressing the green bike picture, the next onboarding screen will be shown. \\
     	The second screen explains the live visualization graph of g force values that will be displayed during recording.\\
     	Finally, the 'heatmaps and markers overlay' features is introduced.\\
@@ -142,7 +142,7 @@ This was the background motivation to develop a mobile application, in a biking 
     	  \caption{Recording data during a bike ride }
 	  \label{fig:record_data}
     \end{figure}
-
+\noindent
     	A tap on the red recording button in the lower left of the start screen starts the recording process.
     	For a better visual distinction, the button changes its color to a darker red.
 	At the same time, a green bycicle and its rider show up in the lower right corner of the map.
@@ -219,7 +219,7 @@ This was the background motivation to develop a mobile application, in a biking 
 	\subsection{Problems}
 
 	%\cite the article
-	Unfortunately, the heatmap way of working suffers from some limitations concerning our use case [1]. The heatmap's circles overlap at low zoom levels which causes false coloring which occurs due to the fact that the intensity-parameter is additive: the overlap area of two circles of intensity 1 will lead to an overall intensity 2. \autoref{fig:overlaps} illustrates this behavior:
+	Unfortunately, the heatmap way of working suffers from some limitations concerning our use case \cite{limitation}. The heatmap's circles overlap at low zoom levels which causes false coloring which occurs due to the fact that the intensity-parameter is additive: the overlap area of two circles of intensity 1 will lead to an overall intensity 2. \autoref{fig:overlaps} illustrates this behavior:
     
     \begin{figure}[H]
     \centering
@@ -235,7 +235,7 @@ This was the background motivation to develop a mobile application, in a biking 
 	\subsection{Lessons learned}
 
 	%more on this: what are the limitations?
-	This project was a good occasion to check out the Google maps API for android. However, it suffers from few limitations so it is necessary to review regularly the releases’ notes and updates.
+	This project was a good occasion to check out the Google maps API for android. However, it suffers from few limitations like unhandled exceptions, leakage of memory, or some rendering problems so it is recommended to review  the releases’ notes and updates before and during any implementation process.
 
     
     
