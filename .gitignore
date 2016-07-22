@@ -2,4 +2,9 @@
 *.pdf
 *.log
 *.out
+*.toc
 *.synctex.gz
+*.idea
+*/out/
+*/out/*
+*.iml
