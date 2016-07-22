@@ -10,7 +10,7 @@
 \usepackage{subfloat}
 \usepackage{subfig}
 \usepackage{hyperref}
-\usepackage[ngerman]{babel}
+\usepackage[ngerman, english]{babel}
 
 
 
@@ -41,28 +41,22 @@ This was the background motivation to develop a mobile application, in a biking 
 	Of course, you need a bike to drive along the streets.
 	For the test rides, two bikes have been used:
 
-	\begin{itemize}
-		\item \textbf{Dr"ossiger XRA 650 B}: full suspension All-Mountain-bike (150mm/155mm suspension)
+	\begin{figure}[H]
+	  \centering
+	  \subfloat[\textbf{Dr\"ossiger XRA 650 B}: full suspension All-Mountain-bike (150mm/155mm suspension)]{\includegraphics[width=0.45\textwidth]{bike_dr}\label{fig:onboarding_1}}
+	  \hfill
+	  \subfloat[\textbf{Rotwild G1 2016}: full suspension Downhill-bike (203mm/203mm suspension)]{\includegraphics[width=0.45\textwidth]{bike_rw}\label{fig:onboarding_2}}
+	  \caption{The used bikes during development of \textbf{Mission:Chuckhole}}
+	  \label{fig:onboarding}
+	\end{figure}
 
-		\begin{figure}[H]
-		\begin{center}
- 		  \includegraphics[scale=0.05]{bike_dr}
-		  \label{fig:bike_dr}
-		\end{center}
-		\end{figure}
 
-		\item \textbf{Rotwild G1 2016}: full suspension Downhill-bike (203mm/203mm suspension)
 
-		\begin{figure}[H]
-		\begin{center}
- 		  \includegraphics[scale=0.05]{bike_rw}
-		  \label{fig:bike_rw}
-		\end{center}
-		\end{figure}
 
-	\end{itemize}
+
+
 	%bike pictures
-	In order to fix the smartphone on the bike, it is recommended to buy a smartphone fix to safely fix your phone on the handlebar. One good possibility is the mumbi TwoSave smartphone fix depicted in \autoref{fig:smartphone_fix}:
+	In order to fix the smartphone on the bike, it is recommended to buy a smartphone fix to safely fix your phone on the handlebar. One good possibility is the mumbi TwoSave smartphone fix which is  depicted in \autoref{fig:smartphone_fix}:
 	
 	\begin{figure}[H]
 		\begin{center}
@@ -72,21 +66,21 @@ This was the background motivation to develop a mobile application, in a biking 
 		\end{center}
 	\end{figure}
 	\noindent
-	It is suitable for many modern smartphones and provides a good multiple-fixing system so your phone will be well protected.\\
-	Last requirement is of course that our \textbf{Mission:Chuckhole} app is installed on the used phone.
-	During development, we used mostly two different devices: a Samsung Galaxy S4 Active and a Google Nexus 5X.
+	It is suitable for many modern smartphones and provides a good multiple-fixing system so that the used phone will be well protected.\\
+	Last requirement is of course that \textbf{Mission:Chuckhole} is installed on the used phone.
+	During development, mostly two different devices were used: a Samsung Galaxy S4 Active and a Google Nexus 5X.
 	On both devices, the app ran smoothly and without any problems.
 
 
     \section{Basic Implementation idea}
 	
-	In order to determine the quality of roads, we will use the g force physical notion. 
-	It represents the force that acts somehow on every object that is moving. 
-	In context of \textbf{Mission:Chuckhole}, the forces are measured that act on the smartphone.
-	From these values, it is possible to detect great changes, which can be interpreted as chuckholes.
+	In order to determine the quality of roads, the g force physical notion was used. 
+	It represents the force that acts on every object. 
+	In context of \textbf{Mission:Chuckhole}, the forces that act on the smartphone are measured.
+	From these values, it is possible to detect big changes, which can be interpreted as chuckholes.
 	Android phones are equipped with an acceleration sensor that provides values for the forces acting in x, y and z direction.
-	Each g force value calculated of these three single values will be associated with a corresponding location provided by GPS.
-	The data will be stored locally into an SQLite database to access them again in future app launches.\\
+	Each g force value (calculated of these three single values) is associated with a corresponding location provided by GPS.
+	The data is stored locally into an SQLite database to access them again in future app launches.\\
 	\autoref{fig:arch_flow} gives an overview of the main parts of \textbf{Mission:Chuckhole}:
 	
 	\begin{figure}[H]
@@ -97,7 +91,7 @@ This was the background motivation to develop a mobile application, in a biking 
     	\end{figure}
     
 	\noindent
-	The next section describes these app features more detailed.
+	The next section describes these app features in more detail.
     
     \section{App components and features}
 	% pictures etc. here
@@ -133,7 +127,8 @@ This was the background motivation to develop a mobile application, in a biking 
 	\begin{center}
 		$ gforce = \frac{\sqrt{x^2 + y^2 + z^2}}{gforce\_earth} $
 	\end{center}
-	
+	\noindent
+	Hereby, $gforce\_earth$ is the g force that acts on every object on the earth.\\
     	\autoref{fig:record_data} shows the start screen of \textbf{Mission:Chuckhole} in the recording phase:
 
 	\begin{figure}[H]
@@ -144,9 +139,9 @@ This was the background motivation to develop a mobile application, in a biking 
     \end{figure}
 \noindent
     	A tap on the red recording button in the lower left of the start screen starts the recording process.
-    	For a better visual distinction, the button changes its color to a darker red.
+    	For a better visual distinction and to give the user the feeling of a pressed button, the button changes its color to a darker red.
 	At the same time, a green bycicle and its rider show up in the lower right corner of the map.
-	Below the map, a grah shows a course of the g force values of the last seven seconds.
+	Below the map, a graph shows a course of the g force values of the last seven seconds.
 	During recording, the heatmap overlay of the map is updated every 10 seconds to observe the most recent results of the recording process.
 	A repeated tap onto the recording button stops the recording and opens the big map view.
 	
@@ -160,7 +155,7 @@ This was the background motivation to develop a mobile application, in a biking 
 
 
     \subsection{Map View}
-    	In order to give the user the opportunity to easily view the quality of roads, the recording results get displayed on a map. The application uses the Google Maps Android API that automatically handles access to Google Maps servers, data downloading, map display, and response to map gestures. 
+    	In order to give the user the opportunity to easily view the quality of roads, the results of recording get displayed on a map. The application uses the Google Maps Android API that automatically handles access to Google Maps servers, data downloading, map display, and response to map gestures. 
     Additionally, the API is used to add heatmap and markers overlay in clusters.
 	% more on this!
 
