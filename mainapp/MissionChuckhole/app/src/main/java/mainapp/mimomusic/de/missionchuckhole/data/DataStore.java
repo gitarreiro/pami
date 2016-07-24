@@ -1,5 +1,6 @@
 package mainapp.mimomusic.de.missionchuckhole.data;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -48,7 +49,9 @@ public class DataStore {
         dbHelper = new ChuckSQLiteHelper(context);
         //dropTable(ChuckSQLiteHelper.TABLE_FIXES);
         dataSet = new ChuckDataSet();
+        ProgressDialog dialog = ProgressDialog.show(context, "Loading data, please wait...","");
         loadFixes(context);
+        dialog.dismiss();
     }
 
     /**

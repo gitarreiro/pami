@@ -10,17 +10,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by MiMo on 05.06.2016.
+ * Class that handles reading AccFixes from a file
+ *
+ * Created by MiMo
  */
 public class AccFixFileReader {
 
+    /**
+     * the resulting list of AccFixes
+     */
     private List<AccFix> fixes;
 
+    /**
+     * Constructor for an AccFixFileReader
+     */
     public AccFixFileReader() {
         fixes = new ArrayList<>();
     }
 
-
+    /**
+     * Method that handles all the reading
+     *
+     * @param filename the filename to read the AccFixes from
+     * @return the retrieved list of AccFixes
+     */
     public List<AccFix> readFromFile(String filename) {
         fixes.clear();
 
@@ -51,5 +64,4 @@ public class AccFixFileReader {
 
         return fixes;
     }
-
 }

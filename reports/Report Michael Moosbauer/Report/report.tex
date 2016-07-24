@@ -40,21 +40,23 @@
 	
 	\subsection{Acceleration Sensor Data Collection}\label{subsec:data_collection}
 		
-		The first step I took was to write a recording app to keep the outputs of the acceleration sensor.
+		The first step that was taken was to write a recording app to keep the outputs of the acceleration sensor.
 		This helper app saved the values of the following form to a file:
 
 		\begin{center}
 			x;y;z;gforce
 		\end{center}
 
+		\noindent
 		Hereby, x is the x-value, y the y-value, z the z-value from the acceleration sensor and gforce is the gforce calculated from x, y and z.
-		The calculation is done the following way:
+		The calculation is done this way (where $gforce\_earth$ is a constant that represents the acceleration that acts on an object on earth, approximately $9.81 \frac{m}{s^2}$):
 
 		\begin{center}
 			$ gforce = \frac{\sqrt{x^2 + y^2 + z^2}}{gforce\_earth} $
 		\end{center}
 
-		The resulting file has to be placed on a computer where the program of \autoref{subsec:finding_thresholds} to be evaluated.
+		\noindent
+		To be evaluated, the resulting file has to be placed on a computer where the program of \autoref{subsec:finding_thresholds} runs.
 		The progress of evaluation is also desribed in this section.
 		
 	\subsection{Finding Thresholds}\label{subsec:finding_thresholds}
@@ -64,8 +66,7 @@
 		Over this dataset, it calculates the minimum, the maximum and the average value of all g forces.
 		It can be assumed that the maximum g force value is a good approximation for finding chuckholes.\\
 		Additionally, a plot for every file is generated that illustrates the distribution of g force values.
-		The plot shows on the x-axis just the number of a g force and on the y-axis the values for the g force.
-		The plots are shown in \autoref{fig:gforce_plots}.
+		The plot shows on the x-axis just the number of a g force and on the y-axis the values for the g force (see \autoref{fig:gforce_plots}).
 
 		\begin{figure}[H]
 	  \centering
@@ -86,7 +87,7 @@
 
 	\subsection{Onboarding}
 		In case the user starts the App for the first time, he gets displayed so-called ``Onboarding'' sites.
-		These sites explain the basic use of the app and are shown in \autoref{fig:onboarding}:
+		These sites explain the basic usage of the app and are shown in \autoref{fig:onboarding}:
 
 
 	\begin{figure}[H]
@@ -100,7 +101,8 @@
 	  \label{fig:onboarding}
 	\end{figure}
 
-
+	\noindent
+	The first site introduces the recording button, the second one the graph that shows the g force and the third onethe button that leads to the big map view.
 
 
 
@@ -116,18 +118,19 @@
 
 	The start screen of \textbf{Mission:Chuckhole} (shown in \autoref{fig:startscreen}) consists of 			
 		\begin{itemize}
-			\item the Map View, moved to the current location (or University of Passau in case that no location could be provided)
-			\item the Acceleration Plot View
-			\item the lower bar that includes two buttons for start recording and getting to the big view of the map
+			\item the Map View, centered to the current location (or University of Passau in case that no location could be provided)
+			\item the Acceleration Graph View
+			\item the lower bar that includes two buttons for starting recording and leading to the big view of the map
 		\end{itemize}
 
+	\noindent
 	The map view displays the current surrounding of the user as well as an overlayed heatmap that contains previously recorded data (explained in detail in \autoref{subsec:displayheatmap}).\\
-	The Acceleration Plot View shows a graph of the current values for the calculated G-force while recording. 
+	The Acceleration Graph View shows a graph of the current values for the calculated g force value while recording. 
 	These values are calculated out of the x-, y- and z-values that are given from the acceleration sensor built in the smartphone and then plotted to the placeholder.\\
 	The bottom bar (see \autoref{fig:bottom_bar}) is used to control the app: the right button starts the MapActivity that provides a bigger view of the map with more details.
 	With the left button, recording of data is started. 
 	The color of the button changes to indicate that the recording is going on.
-	In the same time, the acceleration plot starts displaying the graph of G forces (see \autoref{fig:accplot}).
+	In the same time, the acceleration plot starts displaying the graph of g forces (see \autoref{fig:accplot}).
 	While recording, clicks to the right button are disabled.\\
 	
 	\begin{figure}[H]
@@ -138,7 +141,9 @@
 		\end{center}
 	\end{figure}
 
-The following pictures illustrate the different states of recording:
+	
+
+	The following pictures illustrate the different states of recording:
 
 
 	\begin{figure}[H]
@@ -168,21 +173,22 @@ The following pictures illustrate the different states of recording:
 		\item while recording, the data does change, so a method is invoked every ten seconds that updates the heatmap. 
 	\end{itemize}
 
-	The drawing of the heatmap just removes the previous overlay and creates a new overlay.
+	\noindent
+	The drawing of the heatmap removes the previous overlay and creates a new overlay.
 	The explanation why this workaround is necessary is explained in \autoref{sec:problems}.\\
 	Because the GoogleMap-API heatmap uses a density approach, the dataset has to be preprocessed.
-	This process (that I call ``filtering'') is explained in the next paragraph,  \autoref{subsec:filtering}.
+	This process (that I call ``filtering'') is explained in the next paragraph (\autoref{subsec:filtering}).
 	
 	\subsection{Filtering of the dataset}\label{subsec:filtering}
 
-	The filtering of the dataset has to be done to remove problems with the densit approach that is implemented in GoogleMap-API heatmaps.
+	The filtering of the dataset has to be done to remove problems caused by the density approach (the way how GoogleMap-API heatmaps are implemented).
 	More details about this problem can be found in \autoref{sec:problems}.\\
 	The filtering algorithm has been developed by trying and editing the found values.
 	It is based on the following approach:\\
-	Because the GoogleMap-API heatmaps work with a density approach, points on the heatmap are added when the map is zoomed out.
-	As we are using weighted points, the single intensity add up to a new value, and higher intensity will be displayed as a more reddish point (by using the standard gradient).
-	To not falsify our displaying, I created a method (DataStore.getFixes(double zoomLevel)) that returns a filtered List of AccFixes according to the handed-over zoom level.
-	The filtering itself is done by the intelligent data structure ChuckDataSet, already beforce requesting data.
+	Because of the density approach that GoogleMap-API heatmaps work with, points on the heatmap are added when the map is zoomed out.
+	As we are using weighted points, the single intensity of summed-up points adds up to a new value, and higher intensity will be displayed as a more reddish point (by using the standard gradient).
+	To not falsify the displaying, I created a method (DataStore.getFixes(double zoomLevel)) that returns a filtered List of AccFixes according to the handed-over zoom level.
+	The filtering itself is done by the intelligent data structure ChuckDataSet, already before requesting data.
 	Depending on the zoom level, it returns the corresponding list of AccFixes.
 	The different lists contain AccFixes with different minimum distance to all other AccFixes of the list.
 	The mapping of zoom level to minimum distance is shown in \autoref{tab:filtering_distances}:
@@ -205,14 +211,14 @@ The following pictures illustrate the different states of recording:
 	   \label{tab:filtering_distances}
 	\end{table}
 
-	Details on how ChuckDataSet works can be found in \autoref{subsec:datastorage}. % check position
+	Details on how ChuckDataSet works can be found in \autoref{subsec:datastorage}.
 
 		
 	\subsection{Settings}
 
 	The settings (which can be opened by clicking the upper right button contining three dots) opens an Android SettingsActivity.
 	Here, the thresholds for smooth road and cobblestones can be seen and changed.
-	% TODO IMPLEMENTIEREN nach Möglichkeit!
+
 
 
 
@@ -230,8 +236,9 @@ The following pictures illustrate the different states of recording:
 		\item location: the last known location of the smartphone
 	\end{itemize}
 
-	It stores the values coming from the acceleration sensor and calculates the G force out of them.
-	In addition, it holds a valid GPS location to be able to map a G force value to a specific location.
+	\noindent
+	It stores the values coming from the acceleration sensor and calculates the g force out of them.
+	In addition, it holds a valid GPS location to be able to map a g force value to a specific location.
 	An AccFix can be converted to a String and regained from a String to simplify storing it in the database.
 	This ``savestring'' is defined as follows:
 
@@ -239,10 +246,12 @@ The following pictures illustrate the different states of recording:
 		x;y;z;gforce;latitude;longitude;provider
 	\end{center}
 	
+	\noindent
 	Hereby, latitude and longitude define the location; the provider is a String constant for the issuer of the GPS fix.
 	In this app, possible values for provider are \textbf{network} and \textbf{gps}.\\
 
-	The data storage is basically handled by the class DataStore which is implemented as a Singleton.
+	\noindent
+	The data storage is basically handled by the class \textbf{DataStore} which is implemented as a Singleton.
 	This class maintains an instance of ChuckDataSet where the AccFixes can be stored and retrieved.\\
 	When AccFixes are requested (by DataStore.getFixes(double zoomLevel)), the intelligent dataset returns the according List (where the filtering has already been applied).\\
 	When an AccFix is added (via DataStore.storeFix(AccFix fix)), the DataStore class calls ChuckDataSet.add(AccFix fix), which includes the whole data structure logic.
@@ -256,12 +265,14 @@ The following pictures illustrate the different states of recording:
 		\item add15m(AccFix fix)
 	\end{itemize}
 
+	\noindent
 	The number in each method indicates the minimum distance between all the AccFixes in it. 
 	So each method checks if the AccFix that shall be added falls below the certain minimum distance to any other AccFix that is already in the list.
 	If so, the current AccFix is not added and the method returns false; if not, it is added and the method returns true.\\
 
-	The DataStore class also handles storing the AccFixes in a SQLite database.
-	The database contains one single table \textbf{fixes} whose scheme is shown in \autoref{tab:table_scheme}.
+	\noindent
+	The DataStore class also handles storing the AccFixes in an SQLite database.
+	The database contains one single table called \textbf{fixes} whose scheme is shown in \autoref{tab:table_scheme}.
 
 	\begin{table}[H]
 	  \centering
@@ -275,6 +286,7 @@ The following pictures illustrate the different states of recording:
 	   \label{tab:table_scheme}
 	\end{table}
 
+	\noindent
 	\textbf{\_id} is an auto-incrementing field that is only needed for proper storing.
 	The values in the \textbf{fixes}-column hold the AccFixes as savestrings as explained at the beginning of this section.
 	
@@ -284,7 +296,7 @@ The following pictures illustrate the different states of recording:
 	The first one was the heatmap density problem.
 	I recognized this problem while zooming the map on the start screen: the recorded data (which was first tested in a car on a smooth road) was shown well in a nice green in high zoom levels, but on zooming out, the heatmap was shwon more and more reddish.
 	This effect was issued by the GoogleMap-API heatmap's behaviour on zooming: if the user zooms out, points with a small distance are summed up to a single point.
-	While we use weighted heatmaps (this way, we can take control of the coloring of different G-force values), the intensities of all the points are added up and result in a much bigger value than the single values have been.
+	While we use weighted heatmaps (this way, we can take control of the coloring of different g force values), the intensities of all the points are added up and result in a much bigger value than the single values have been.
 	To get rid of this behaviour, I added the filtering algorithm described in \autoref{subsec:filtering}.\\
 
 	Another problem occurred when updating the heatmap while recording (mentioned in \autoref{subsec:displayheatmap}).
@@ -297,9 +309,9 @@ The following pictures illustrate the different states of recording:
 
     
     % bib stuff
-    \nocite{*}
-    \addtocontents{toc}{\protect\vspace{\beforebibskip}}
-    \addcontentsline{toc}{section}{\refname}    
-    \bibliographystyle{plain}
-    \bibliography{../Bibliography}
+%    \nocite{*}
+%    \addtocontents{toc}{\protect\vspace{\beforebibskip}}
+%    \addcontentsline{toc}{section}{\refname}    
+%    \bibliographystyle{plain}
+%    \bibliography{../Bibliography}
 \end{document}

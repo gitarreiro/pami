@@ -8,13 +8,28 @@ import java.awt.geom.Line2D;
 import java.util.List;
 
 /**
+ * Class that handles drawing a simple x/y graph
+ *
  * Created by MiMo
  */
 public class Graph extends JPanel {
+
+    /**
+     * the data to draw
+     */
     private double[] data;
-    final int PAD = 20;
 
+    /**
+     * Constant for the padding
+     */
+    private final int PAD = 20;
 
+    /**
+     * Constructor fo a graph
+     *
+     * @param fixes the fixes to draw the graph from
+     * @param result unused at the moment
+     */
     public Graph(List<AccFix> fixes, CalculationResult result) {
         double[] data = new double[fixes.size()];
         for(int i = 0; i < fixes.size(); i++) {
@@ -23,6 +38,11 @@ public class Graph extends JPanel {
         this.data = data;
     }
 
+    /**
+     * Paints the graph
+     *
+     * @param g Graphics object
+     */
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -45,6 +65,11 @@ public class Graph extends JPanel {
         }
     }
 
+    /**
+     * Get the maximum value out of the data
+     *
+     * @return
+     */
     private double getMax() {
         double max = -Integer.MAX_VALUE;
         for (int i = 0; i < data.length; i++) {
@@ -53,6 +78,4 @@ public class Graph extends JPanel {
         }
         return max;
     }
-
-
 }

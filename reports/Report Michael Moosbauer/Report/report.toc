@@ -11,5 +11,3 @@
 \contentsline {subsection}{\numberline {3.6}Settings}{5}{subsection.3.6}
 \contentsline {subsection}{\numberline {3.7}Data Storage and Data Access}{5}{subsection.3.7}
 \contentsline {section}{\numberline {4}Problems/Lessons Learned}{6}{section.4}
-\vspace {\beforebibskip }
-\contentsline {section}{References}{6}{section.4}

@@ -22,7 +22,7 @@
     
     \maketitle
     
-% picture titles still german
+
 
     \tableofcontents
     
@@ -226,6 +226,9 @@ This was the background motivation to develop a mobile application, in a biking 
     \end{figure}
     \noindent
     To overcome this issue, we apply a filtering on our dataset, within a specific zoom range where the overlaps occur, in an attempt to reduce fake coloring of heatmaps.
+	The filtering process removes AccFixes by enabling minimum distances between them according to the zoom level.
+	The lower the zoom level of the map, the more AccFixes will be filtered out.
+	This way, less heatmap points are overlaid and the coloring does not get falsified.
 
 	\subsection{Lessons learned}
 

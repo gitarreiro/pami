@@ -8,15 +8,23 @@ import javax.swing.*;
 import java.util.List;
 
 /**
- * Created by MiMo on 05.06.2016.
+ * Main class for calculating
+ *
+ * Created by MiMo
  */
 public class Main {
 
     public static void main(String[] args) {
-        //File einlesen D:\pami\pami\data\prerec
 
+        /**
+         * the full basic path to the folder of the files that will be examinated; the defult location has to be adapted to your file
+         * location!
+         */
         String path = "D:\\pami\\pami\\data\\prerec\\";
 
+        /**
+         * Array that stores the filenames of the files that will be examinated
+         */
         String[] filenames = {path + "smooth.txt", path + "smooth2.txt", path + "cobble.txt"};
 
         AccFixFileReader reader = new AccFixFileReader();
@@ -43,7 +51,5 @@ public class Main {
             f.setLocation(200,200);
             f.setVisible(true);
         }
-
-
     }
 }

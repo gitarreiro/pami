@@ -481,8 +481,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     private void drawHeatmap() {
 
-        System.out.println("drawing heatmap for zoom level "+lastZoom);
-
         // get the data to create the overlay from
         List<AccFix> fixes = DataStore.getInstance(this).getFixes(lastZoom);
 
@@ -491,7 +489,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         List<WeightedLatLng> points = new ArrayList<>();
 
         // add a dummy point somewhere the user won't scroll to
-        Location somewhereInNowhere = new Location("dummy"); //TODO replace by a point far away
+        Location somewhereInNowhere = new Location("dummy");
         somewhereInNowhere.setLatitude(64.409029);
         somewhereInNowhere.setLongitude(-31.560097);
 
