@@ -53,14 +53,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private ClusterManager<MyItem> mClusterManager;
     private int i;
     private double lastZoom;
-    boolean test;
     private CheckBox heatMaps, markers;
-    List<WeightedLatLng> list1 = new ArrayList<>();
+
 
 
 
 
     @Override
+
+    // sets the layout file as the content view for the MapActivity
+    // sets the callback on the fragment.
     protected void onCreate(Bundle savedInstanceState) {
 
 
@@ -105,8 +107,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
 
         mMap.getUiSettings().setCompassEnabled(true);
-
-        //mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
 
 
@@ -216,18 +216,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 // This method overlays markers on chuckholes on the map in clusters
 
     private void markers_clustering() {
-        // Initialize the manager with the context and the map.
-        // (Activity extends context, so we can pass 'this' in the constructor.)
+
         i=0;
         double lat, lng;
         Location L;
 
-
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
         mClusterManager = new ClusterManager<MyItem>(this, mMap);
 
         // Point the map's listeners at the listeners implemented by the cluster manager.
         mMap.setOnCameraChangeListener(mClusterManager);
-        //mMap.setOnMarkerClickListener(mClusterManager);
+
 
 
         // Add cluster items (markers) to the cluster manager.
@@ -249,7 +249,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             }
 
         }
-        //System.out.println("Number or markers of clustering  "+i);
         if (i==0)
             Toast.makeText(this, "No chuckholes were found", Toast.LENGTH_SHORT).show();
     }
@@ -275,8 +274,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         double lat, lng, intensity;
 
 
-        System.out.println("last zoom before overlay" + lastZoom);
-
         records = DataStore.getInstance(this).getFixes(lastZoom);
 
                 List<WeightedLatLng> list = new ArrayList<>();
@@ -292,7 +289,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     lng = L.getLongitude();
 
                     intensity = record.getgForce() / 6.0;
-                    //System.out.println(intensity);
+
                     if (intensity > 1)
                         intensity = 1;
 
