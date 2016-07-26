@@ -59,8 +59,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
 
 
-    //GoogleMap.OnCameraChangeListener
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,23 +78,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-
-
+    // this method enables compass, zoom control and current location of user
+    // handles interaction of the user using the checkboxes
+    // request permission to access GPS to localize current location of the user and animate the map toward it
     public void onMapReady(GoogleMap googleMap) {
 
         LatLng Location;
         double lat, lng;
-
-
 
         mMap = googleMap;
         mMap.setPadding(0,0,0,55);
@@ -225,7 +213,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
 
-
+// This method overlays markers on chuckholes on the map in clusters
 
     private void markers_clustering() {
         // Initialize the manager with the context and the map.
@@ -266,6 +254,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             Toast.makeText(this, "No chuckholes were found", Toast.LENGTH_SHORT).show();
     }
 
+
+    // this method will always update the current zoom for the heatmap overlay feature
     public void onCameraChange(CameraPosition position) {
 
 
@@ -277,6 +267,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     }
 
+    //this method overlays heatmaps on the map
 
     private void dynamic_heatmap()
 
@@ -325,11 +316,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                         mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider1));
                         System.out.println("overlay done");
 
-
-
-
-                    //mProvider1.setWeightedData(list);
-                    //mOverlay.clearTileCache();
 
                 }
 
